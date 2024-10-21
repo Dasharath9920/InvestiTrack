@@ -7,7 +7,7 @@ const initialState = {
    user: {
       isLoggedIn: false,
       username: '',
-      token: ''
+      email: ''
    },
    settings: {
       theme: THEMES.LIGHT

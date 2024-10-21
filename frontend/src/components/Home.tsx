@@ -1,9 +1,19 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { Container, Row, Col, Nav, Card, Button } from 'react-bootstrap';
 import { FaDollarSign, FaClock, FaPlus } from 'react-icons/fa';
 
 const Home = () => {
   const [activeTab, setActiveTab] = useState('money');
+
+  const fetchData = async () => {
+    const resp = await fetch('http://localhost:3000/api/entries/amount');
+    const data = await resp.json();
+    console.log('data: ',data);
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <Container className="py-5">

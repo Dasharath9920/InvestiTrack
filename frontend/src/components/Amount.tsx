@@ -4,7 +4,7 @@ import { FaPlus, FaDollarSign, FaList, FaChartBar } from 'react-icons/fa';
 import { AMOUNT_CATEGORIES } from '../constants/constants';
 
 interface AmountEntry {
-  category: string;
+  spentOn: string;
   amount: number;
 }
 
@@ -17,12 +17,19 @@ const Amount: React.FC = () => {
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
 
-  const handleAddEntry = () => {
+  const handleAddEntry = async () => {
     if (newCategory && newAmount > 0) {
-      setEntries([...entries, { category: newCategory, amount: newAmount }]);
+      setEntries([...entries, { spentOn: newCategory, amount: newAmount }]);
       setNewCategory('');
       setNewAmount(0);
       handleClose();
+      const resp = await fetch('http://localhost:3000/api/entries/amount',{
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({spentOn: newCategory, amount: newAmount})
+      });
+      const data = await resp.json();
+      console.log('data: ',data);;
     }
   };
 
@@ -77,7 +84,7 @@ const Amount: React.FC = () => {
             <Card className="shadow-sm border-0 bg-light">
               <Card.Body className="d-flex justify-content-between align-items-center">
                 <div>
-                  <Card.Title className="fw-bold mb-1">{item.category}</Card.Title>
+                  <Card.Title className="fw-bold mb-1">{item.spentOn}</Card.Title>
                   <Card.Text className="text-muted">${item.amount.toFixed(2)}</Card.Text>
                 </div>
                 <FaDollarSign className="text-success" size={24} />
