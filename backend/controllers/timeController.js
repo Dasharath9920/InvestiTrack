@@ -16,8 +16,9 @@ export const createTimeData = asyncHandler(async (req, res) => {
       if(!time || !investedIn){
          throw new Error('All fields are required');
       }
-
-      const newTimeData = await Time.create({time, investedIn});
+      console.log('req.user: ',req.user);
+      const newTimeData = new Time({time, investedIn, userId: req.user.id});
+      await newTimeData.save();
       res.status(201).json({success: true, newTimeData});
    } catch(err) {
       res.status(500).json({success: false, message: err.message});

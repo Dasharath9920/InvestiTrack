@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
 import { Container, Tabs, Tab, Form, Button, Card } from 'react-bootstrap';
+import { RegisterResponse, LoginResponse } from '../constants/dataTypes';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import actionTypes from '../constants/actionTypes';
+import { ACCESS_TOKEN, EMAIL } from '../constants/constants';
 
 const Login = () => {
   const [email, setEmail] = useState<string>('');
@@ -7,14 +12,65 @@ const Login = () => {
   const [username, setUsername] = useState<string>('');
   const [tab, setTab] = useState<string>('login');
 
-  const loginUser = (e: React.FormEvent) => {
+  const navigate = useNavigate();
+
+  const state = useSelector((state: any) => state);
+  const dispatch = useDispatch();
+
+  const loginUser = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Add login logic here
+    if(!email || !password){
+      alert('Please fill all the fields');
+      return;
+    }
+
+    const response = await fetch('http://localhost:3000/api/users/login', {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({email, password})
+    });
+
+    const data: LoginResponse = await response.json();
+    if(data.success){
+      dispatch({
+        type: actionTypes.SET_USER,
+        payload: {
+          isLoggedIn: true,
+          username: data.userName,
+          email: data.email
+        }
+      });
+      localStorage.setItem(ACCESS_TOKEN, JSON.stringify(data.accessToken));
+      localStorage.setItem(EMAIL, JSON.stringify(email));
+
+      navigate('/');
+    }
+    else{
+      console.log('Error: '+ data.message);
+    }
   }
 
-  const registerUser = (e: React.FormEvent) => {
+  const registerUser = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Add registration logic here
+    if(!username || !email || !password){
+      alert('Please fill all the fields');
+      return;
+    }
+    const response = await fetch('http://localhost:3000/api/users/register', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({username, email, password})
+    });
+    const data: RegisterResponse = await response.json();
+
+    if(data.success){
+      alert('User registered successfully');
+    }
+    else{
+      alert('Error: '+ data.message);
+    }
   }
 
   return (

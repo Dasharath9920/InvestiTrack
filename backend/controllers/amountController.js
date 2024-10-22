@@ -3,8 +3,8 @@ import Amount from '../models/money.model.js';
 
 export const getAllMoneyData = asyncHandler(async (req, res) => {
    try{
-      const moneyData = await Amount.find();
-      res.status(200).json({success: true, moneyData});
+      const amountData = await Amount.find();
+      res.status(200).json({success: true, amountData});
    } catch(err) {
       res.status(500).json({success: false, message: err.message});
    }
@@ -17,7 +17,8 @@ export const createMoneyData = asyncHandler(async (req, res) => {
          throw new Error('All fields are required');
       }
 
-      const newMoneyData = await Amount.create({amount, spentOn});
+      const newMoneyData = new Amount({amount, spentOn, userId: req.user.id});
+      await newMoneyData.save();
       res.status(201).json({success: true, newMoneyData});
    } catch(err) {
       res.status(500).json({success: false, message: err.message});

@@ -1,18 +1,29 @@
 import React, {useState, useEffect} from 'react';
-import { Container, Row, Col, Nav, Card, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import { FaDollarSign, FaClock, FaPlus } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
+import { ACCESS_TOKEN } from '../constants/constants';
 
 const Home = () => {
-  const [activeTab, setActiveTab] = useState('money');
+  const user = useSelector((state: any) => state.user);
 
   const fetchData = async () => {
-    const resp = await fetch('http://localhost:3000/api/entries/amount');
+    const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
+    const resp = await fetch('http://localhost:3000/api/entries/dashboard',{
+      headers: {
+        'Authorization': `Bearer ${authToken}`
+      }
+    });
     const data = await resp.json();
     console.log('data: ',data);
+    if(data.success){
+    }
   }
 
   useEffect(() => {
-    fetchData();
+    if(user.isLoggedIn){
+      fetchData();
+    }
   }, []);
 
   return (

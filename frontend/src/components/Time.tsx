@@ -1,35 +1,68 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Modal, Form, ListGroup, Card, Container, Row, Col } from 'react-bootstrap';
 import { FaPlus, FaClock, FaList, FaChartBar } from 'react-icons/fa';
-import { TIME_CATEGORIES } from '../constants/constants';
-
-
-// ... existing imports ...
+import { TIME_CATEGORIES, ACCESS_TOKEN } from '../constants/constants';
 
 interface TimeEntry {
-  activity: string;
-  duration: number;
+  investedIn: string;
+  time: number;
 }
 
 const Time: React.FC = () => {
   const [entries, setEntries] = useState<TimeEntry[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [newActivity, setNewActivity] = useState('');
+  const [newActivity, setNewActivity] = useState(Object.values(TIME_CATEGORIES)[0]);
   const [newDuration, setNewDuration] = useState(0);
 
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
 
-  const handleAddEntry = () => {
+  const handleAddEntry = async () => {
     if (newActivity && newDuration > 0) {
-      setEntries([...entries, { activity: newActivity, duration: newDuration }]);
+      setEntries([...entries, { investedIn: newActivity, time: newDuration }]);
       setNewActivity('');
       setNewDuration(0);
-      handleClose();
+      const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
+      const resp = await fetch('http://localhost:3000/api/entries/time',{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`
+        },
+        body: JSON.stringify({investedIn: newActivity, time: newDuration})
+      });
+      const data = await resp.json();
+      if(data.success){
+        console.log('data: ',data);
+        handleClose();
+      }
+      else{
+        console.log('error: ',data);
+      }
     }
   };
-  const totalTime = entries.reduce((sum, entry) => sum + entry.duration, 0);
+
+  const fetchTimeData = async () => {
+    const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
+    const resp = await fetch('http://localhost:3000/api/entries/time',{
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      }
+    });
+    const data = await resp.json();
+    if(data.success){
+      setEntries(data.timeData);
+    }
+  };
+
+  useEffect(() => {
+    fetchTimeData();
+  }, []);
+
   const categories: string[] = Object.values(TIME_CATEGORIES);
+  const totalTime = entries.reduce((sum, entry) => sum + entry.time, 0);
 
   return (
    <Container className="py-5">
@@ -79,8 +112,8 @@ const Time: React.FC = () => {
            <Card className="shadow-sm border-0 bg-light">
              <Card.Body className="d-flex justify-content-between align-items-center">
                <div>
-                 <Card.Title className="fw-bold mb-1">{item.activity}</Card.Title>
-                 <Card.Text className="text-muted">{item.duration} minutes</Card.Text>
+                 <Card.Title className="fw-bold mb-1">{item.investedIn}</Card.Title>
+                 <Card.Text className="text-muted">{item.time} minutes</Card.Text>
                </div>
                <FaClock className="text-primary" size={24} />
              </Card.Body>

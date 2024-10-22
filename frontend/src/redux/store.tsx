@@ -30,6 +30,8 @@ const reducer = (state = initialState, action: any) => {
          return {... state, times: action.payload};
       case actionTypes.SET_AMOUNTS:
          return {... state, amounts: action.payload};
+      case actionTypes.SET_USER:
+         return {... state, user: action.payload};
       default:
          return state;
    }

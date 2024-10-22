@@ -4,8 +4,7 @@ import { IoPerson, IoLogIn, IoLogOut } from "react-icons/io5";
 import { useDispatch, useSelector } from 'react-redux';
 
 const CustomNavbar = () => {
-  const state = useSelector((state: any) => state);
-  console.log("state: ",state);
+  const user = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
 
   return (
@@ -23,7 +22,7 @@ const CustomNavbar = () => {
             <Nav.Link as={Link} to="/settings">Settings</Nav.Link>
           </Nav>
           <Nav>
-            {state.user.isLoggedIn ? (
+            {user.isLoggedIn ? (
               <>
                 <Nav.Link as={Link} to="/profile" className="me-2">
                   <IoPerson size={20} className="me-1" />

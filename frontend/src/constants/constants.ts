@@ -6,6 +6,9 @@ export const TABS = {
    SETTINGS: 'settings'
 }
 
+export const ACCESS_TOKEN = 'accessToken';
+export const EMAIL = 'email';
+
 export const THEMES = {
    LIGHT: 'light',
    DARK: 'dark'

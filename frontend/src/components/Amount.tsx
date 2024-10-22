@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Modal, Form, ListGroup, Card, Container, Row, Col } from 'react-bootstrap';
 import { FaPlus, FaDollarSign, FaList, FaChartBar } from 'react-icons/fa';
-import { AMOUNT_CATEGORIES } from '../constants/constants';
+import { AMOUNT_CATEGORIES, ACCESS_TOKEN } from '../constants/constants';
 
 interface AmountEntry {
   spentOn: string;
@@ -11,7 +11,7 @@ interface AmountEntry {
 const Amount: React.FC = () => {
   const [entries, setEntries] = useState<AmountEntry[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [newCategory, setNewCategory] = useState('');
+  const [newCategory, setNewCategory] = useState(Object.values(AMOUNT_CATEGORIES)[0]);
   const [newAmount, setNewAmount] = useState(0);
 
   const handleClose = () => setShowModal(false);
@@ -22,16 +22,45 @@ const Amount: React.FC = () => {
       setEntries([...entries, { spentOn: newCategory, amount: newAmount }]);
       setNewCategory('');
       setNewAmount(0);
-      handleClose();
+      const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
       const resp = await fetch('http://localhost:3000/api/entries/amount',{
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`
+        },
         body: JSON.stringify({spentOn: newCategory, amount: newAmount})
       });
       const data = await resp.json();
-      console.log('data: ',data);;
+
+      if(data.success){
+        console.log('data: ',data);
+        handleClose();
+      }
+      else{
+        console.log('error: ',data);
+      }
+
     }
   };
+
+  const fetchAmountData = async () => {
+    const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
+    const resp = await fetch('http://localhost:3000/api/entries/amount',{
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${authToken}`
+      }
+    });
+    const data = await resp.json();
+    if(data.success){
+      setEntries(data.amountData);
+    }
+  };
+
+  useEffect(() => {
+    fetchAmountData();
+  }, []);
 
   const totalAmount: number = entries.reduce((sum, entry) => sum + entry.amount, 0);
   const categories: string[] = Object.values(AMOUNT_CATEGORIES);

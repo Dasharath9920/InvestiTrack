@@ -1,6 +1,7 @@
 const actionTypes: { [key: string]: string } = {
-   SET_TIMES: 'SET_TIMES',
-   SET_AMOUNTS: 'SET_AMOUNTS'
+   SET_TIMES: 'setTimes',
+   SET_AMOUNTS: 'setAmounts',
+   SET_USER: 'setUser'
 }
 
 export default actionTypes;
