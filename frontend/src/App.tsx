@@ -20,9 +20,9 @@ function App() {
   const navigate = useNavigate();
 
   const initializeUser = async () => {
-    console.log('here: ',user);
-    const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
-    if(!user.isLoggedIn && !authToken){
+    const authToken = localStorage.getItem(ACCESS_TOKEN)? JSON.parse(localStorage.getItem(ACCESS_TOKEN)!): '';
+    console.log('here: ',user, authToken);
+    if(!authToken){
       localStorage.removeItem(ACCESS_TOKEN);
       navigate('/login');
     }

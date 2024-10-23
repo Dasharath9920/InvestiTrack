@@ -7,7 +7,7 @@ const timeEntryRoutes = express.Router();
 timeEntryRoutes.use(validateToken);
 timeEntryRoutes.get('/', getAllTimeData);
 timeEntryRoutes.post('/', createTimeData);
-timeEntryRoutes.delete('/:id', deleteTimeData);
+timeEntryRoutes.delete('/', deleteTimeData);
 timeEntryRoutes.put('/:id', updateTimeData);
 
 export default timeEntryRoutes;

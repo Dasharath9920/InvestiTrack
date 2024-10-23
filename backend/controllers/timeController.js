@@ -16,7 +16,7 @@ export const createTimeData = asyncHandler(async (req, res) => {
       if(!time || !investedIn){
          throw new Error('All fields are required');
       }
-      console.log('req.user: ',req.user);
+
       const newTimeData = new Time({time, investedIn, userId: req.user.id});
       await newTimeData.save();
       res.status(201).json({success: true, newTimeData});
@@ -27,12 +27,16 @@ export const createTimeData = asyncHandler(async (req, res) => {
 
 export const deleteTimeData = asyncHandler(async (req, res) => {
    try{
-      const {id} = req.params;
-      if(!id){
-         throw new Error('Id is required');
+      const {entryId, userId} = req.body;
+      if(!entryId || !userId){
+         throw new Error('Entry ID and User ID are required');
       }
 
-      const deletedTimeData = await Time.findByIdAndDelete(id);
+      if(userId !== req.user.id){
+         res.status(401).json({success: false, message: 'User is not authorized'});
+      }
+
+      const deletedTimeData = await Time.findByIdAndDelete(entryId);
       res.status(200).json({success: true, deletedTimeData});
    } catch(err) {
       res.status(500).json({success: false, message: err.message});
@@ -41,19 +45,16 @@ export const deleteTimeData = asyncHandler(async (req, res) => {
 
 export const updateTimeData = asyncHandler(async (req, res) => {
    try {
-      const {id} = req.params;
-      if(!id){
-         throw new Error('Id is required');
-      }
-      const timeData = await Time.findById(id);
-      if(!timeData){
-         throw new Error('Time data not found');
-      }
-      const {time, investedIn} = req.body;
-      if(!time || !investedIn){
+      const {entryId, time, investedIn, userId} = req.body;
+      if(!entryId || !time || !investedIn || !userId){
          throw new Error('All fields are required');
       }
-      const updatedTimeData = await Time.findByIdAndUpdate(id, req.body, {new: true});
+
+      if(userId !== req.user.id){
+         res.status(401).json({success: false, message: 'User is not authorized'});
+      }
+
+      const updatedTimeData = await Time.findByIdAndUpdate(entryId, req.body, {new: true});
       res.status(201).json({success: true, updatedTimeData});
    } catch (err) {
       res.status(500).json({success: false, message: err.message});

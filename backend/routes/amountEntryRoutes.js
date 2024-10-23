@@ -7,7 +7,7 @@ const moneyEntryRoutes = express.Router();
 moneyEntryRoutes.use(validateToken);
 moneyEntryRoutes.get('/', getAllMoneyData);
 moneyEntryRoutes.post('/', createMoneyData);
-moneyEntryRoutes.delete('/:id', deleteMoneyData);
+moneyEntryRoutes.delete('/', deleteMoneyData);
 moneyEntryRoutes.put('/:id', updateMoneyData);
 
 export default moneyEntryRoutes;

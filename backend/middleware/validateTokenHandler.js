@@ -4,7 +4,6 @@ import jwt from 'jsonwebtoken';
 const validateToken = expressAsyncHandler(async(req, res, next) => {
    let token = '';
    const authHead = req.headers.authorization || req.headers.Authorization;
-   console.log('authHead: ',authHead);
    if(authHead && authHead.startsWith('Bearer')){
       token = authHead.split(' ')[1];
    }

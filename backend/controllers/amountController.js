@@ -27,12 +27,16 @@ export const createMoneyData = asyncHandler(async (req, res) => {
 
 export const deleteMoneyData = asyncHandler(async (req, res) => {
    try{
-      const {id} = req.params;
-      if(!id){
-         throw new Error('Id is required');
+      const {entryId, userId} = req.body;
+      if(!entryId || !userId){
+         throw new Error('Entry ID and User ID are required');
       }
 
-      const deletedMoneyData = await Amount.findByIdAndDelete(id);
+      if(userId !== req.user.id){
+         res.status(401).json({success: false, message: 'User is not authorized'});
+      }
+
+      const deletedMoneyData = await Amount.findByIdAndDelete(entryId);
       res.status(200).json({success: true, deletedMoneyData});
    } catch(err) {
       res.status(500).json({success: false, message: err.message});
@@ -41,17 +45,16 @@ export const deleteMoneyData = asyncHandler(async (req, res) => {
 
 export const updateMoneyData = asyncHandler(async (req, res) => {
    try{
-      const {id} = req.params;
-      if(!id){
-         throw new Error('Id is required');
-      }
-
-      const {money, spentOn} = req.body;
-      if(!money || !spentOn){
+      const {entryId, amount, spentOn, userId} = req.body;
+      if(!entryId || !amount || !spentOn || !userId){
          throw new Error('All fields are required');
       }
 
-      const updatedMoneyData = await Amount.findByIdAndUpdate(id, {money, spentOn}, {new: true});
+      if(userId !== req.user.id){
+         res.status(401).json({success: false, message: 'User is not authorized'});
+      }
+
+      const updatedMoneyData = await Amount.findByIdAndUpdate(entryId, req.body, {new: true});
       res.status(200).json({success: true, updatedMoneyData});
    } catch(err) {
       res.status(500).json({success: false, message: err.message});

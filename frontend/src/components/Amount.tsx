@@ -1,12 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Modal, Form, ListGroup, Card, Container, Row, Col } from 'react-bootstrap';
-import { FaPlus, FaDollarSign, FaList, FaChartBar } from 'react-icons/fa';
+import { Button, Modal, Form, ListGroup, Card, Container, Row, Col, Dropdown } from 'react-bootstrap';
+import { FaPlus, FaDollarSign, FaList, FaChartBar, FaEdit, FaTrash, FaEllipsisV } from 'react-icons/fa';
 import { AMOUNT_CATEGORIES, ACCESS_TOKEN } from '../constants/constants';
 
 interface AmountEntry {
   spentOn: string;
   amount: number;
+  createdAt: string;
 }
+
+const CustomToggle = React.forwardRef(({ children, onClick }: { children: React.ReactNode, onClick: (event: React.MouseEvent<HTMLDivElement>) => void }, ref: React.Ref<HTMLDivElement>) => (
+  <div
+    ref={ref}
+    onClick={(e) => {
+      e.preventDefault();
+      onClick(e);
+    }}
+    style={{cursor: 'pointer'}}
+  >
+    {children}
+  </div>
+));
 
 const Amount: React.FC = () => {
   const [entries, setEntries] = useState<AmountEntry[]>([]);
@@ -19,7 +33,7 @@ const Amount: React.FC = () => {
 
   const handleAddEntry = async () => {
     if (newCategory && newAmount > 0) {
-      setEntries([...entries, { spentOn: newCategory, amount: newAmount }]);
+      setEntries([...entries, { spentOn: newCategory, amount: newAmount, createdAt: new Date().toISOString() }]);
       setNewCategory('');
       setNewAmount(0);
       const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
@@ -35,6 +49,7 @@ const Amount: React.FC = () => {
 
       if(data.success){
         console.log('data: ',data);
+        fetchAmountData();
         handleClose();
       }
       else{
@@ -43,6 +58,35 @@ const Amount: React.FC = () => {
 
     }
   };
+
+  const handleEdit = async (item: AmountEntry) => {
+    console.log('item: ',item);
+  }
+
+  const handleDelete = async (item: any) => {
+    if(!item._id || !item.userId){
+      console.log("Invalid item");
+      return;
+    }
+
+    const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
+    const resp = await fetch('http://localhost:3000/api/entries/amount',{
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify({entryId: item._id, userId: item.userId})
+    });
+    const data = await resp.json();
+    if(data.success){
+      console.log('data: ',data);
+      fetchAmountData();
+    }
+    else{
+      console.log('error: ',data);
+    }
+  }
 
   const fetchAmountData = async () => {
     const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
@@ -75,7 +119,7 @@ const Amount: React.FC = () => {
             <Card.Body className="d-flex flex-column justify-content-center align-items-center">
               <FaDollarSign className="text-success mb-3" size={40} />
               <Card.Title className="fw-bold">Total Amount Spent</Card.Title>
-              <Card.Text as="h3" className="mb-0 text-success">${totalAmount.toFixed(2)}</Card.Text>
+              <Card.Text as="h3" className="mb-0 text-success">₹{totalAmount.toFixed(2)}</Card.Text>
             </Card.Body>
           </Card>
         </Col>
@@ -94,7 +138,7 @@ const Amount: React.FC = () => {
               <FaChartBar className="text-success mb-3" size={40} />
               <Card.Title className="fw-bold">Average Expense</Card.Title>
               <Card.Text as="h3" className="mb-0 text-success">
-                ${entries.length ? (totalAmount / entries.length).toFixed(2) : '0.00'}
+              ₹{entries.length ? (totalAmount / entries.length).toFixed(2) : '0.00'}
               </Card.Text>
             </Card.Body>
           </Card>
@@ -111,12 +155,23 @@ const Amount: React.FC = () => {
         {entries.map((item, index) => (
           <ListGroup.Item key={index} className="mb-3 border-0">
             <Card className="shadow-sm border-0 bg-light">
-              <Card.Body className="d-flex justify-content-between align-items-center">
-                <div>
-                  <Card.Title className="fw-bold mb-1">{item.spentOn}</Card.Title>
-                  <Card.Text className="text-muted">${item.amount.toFixed(2)}</Card.Text>
+              <Card.Body>
+                <div className="d-flex justify-content-between align-items-center mb-2">
+                  <Card.Title className="fw-bold mb-0">{item.spentOn}</Card.Title>
+                  <Dropdown align="end">
+                    <Dropdown.Toggle as={CustomToggle} id={`dropdown-${index}`}>
+                      <FaEllipsisV />
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      <Dropdown.Item onClick={() => handleEdit(item)}><FaEdit className="me-2" /> Edit</Dropdown.Item>
+                      <Dropdown.Item onClick={() => handleDelete(item)}><FaTrash className="me-2" /> Delete</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
                 </div>
-                <FaDollarSign className="text-success" size={24} />
+                <Card.Text className="text-success fs-4 mb-2">₹{item.amount.toFixed(2)}</Card.Text>
+                <Card.Text className="text-muted small mb-0">
+                  Created on: {new Date(item.createdAt).toLocaleString()}
+                </Card.Text>
               </Card.Body>
             </Card>
           </ListGroup.Item>
@@ -143,7 +198,7 @@ const Amount: React.FC = () => {
               </Form.Select>
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Amount ($)</Form.Label>
+              <Form.Label>Amount (₹)</Form.Label>
               <Form.Control
                 type="number"
                 step="0.01"

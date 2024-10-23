@@ -1,12 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Modal, Form, ListGroup, Card, Container, Row, Col } from 'react-bootstrap';
-import { FaPlus, FaClock, FaList, FaChartBar } from 'react-icons/fa';
+import { Button, Modal, Form, ListGroup, Card, Container, Row, Col, Dropdown } from 'react-bootstrap';
+import { FaPlus, FaClock, FaList, FaChartBar, FaEllipsisV, FaEdit, FaTrash, FaHourglassHalf } from 'react-icons/fa';
 import { TIME_CATEGORIES, ACCESS_TOKEN } from '../constants/constants';
+import { formatTime, getTimeDescription } from '../helper';
 
 interface TimeEntry {
   investedIn: string;
   time: number;
+  createdAt: string;
 }
+
+const CustomToggle = React.forwardRef(({ children, onClick }: { children: React.ReactNode, onClick: (event: React.MouseEvent<HTMLDivElement>) => void }, ref: React.Ref<HTMLDivElement>) => (
+  <div
+    ref={ref}
+    onClick={(e) => {
+      e.preventDefault();
+      onClick(e);
+    }}
+    style={{cursor: 'pointer'}}
+  >
+    {children}
+  </div>
+));
 
 const Time: React.FC = () => {
   const [entries, setEntries] = useState<TimeEntry[]>([]);
@@ -19,7 +34,7 @@ const Time: React.FC = () => {
 
   const handleAddEntry = async () => {
     if (newActivity && newDuration > 0) {
-      setEntries([...entries, { investedIn: newActivity, time: newDuration }]);
+      setEntries([...entries, { investedIn: newActivity, time: newDuration, createdAt: new Date().toISOString() }]);
       setNewActivity('');
       setNewDuration(0);
       const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
@@ -34,11 +49,39 @@ const Time: React.FC = () => {
       const data = await resp.json();
       if(data.success){
         console.log('data: ',data);
+        fetchTimeData();
         handleClose();
       }
       else{
         console.log('error: ',data);
       }
+    }
+  };
+
+  const handleEdit = async (item: TimeEntry) => {
+    console.log('item: ',item);
+  };
+
+  const handleDelete = async (item: any) => {
+    if(!item._id || !item.userId){
+      console.log("Invalid item");
+      return;
+    }
+    const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
+    const resp = await fetch('http://localhost:3000/api/entries/time', {
+      method: "DELETE",
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify({entryId: item._id, userId: item.userId})
+    });
+    const data = await resp.json();
+    if(data.success){
+      console.log('data: ',data);
+      fetchTimeData();
+    } else{
+      console.log('error: ',data);
     }
   };
 
@@ -62,7 +105,7 @@ const Time: React.FC = () => {
   }, []);
 
   const categories: string[] = Object.values(TIME_CATEGORIES);
-  const totalTime = entries.reduce((sum, entry) => sum + entry.time, 0);
+  const totalTime = entries.reduce((sum: number, entry: TimeEntry) => sum + Number(entry.time), 0);
 
   return (
    <Container className="py-5">
@@ -74,7 +117,7 @@ const Time: React.FC = () => {
            <Card.Body className="d-flex flex-column justify-content-center align-items-center">
              <FaClock className="text-primary mb-3" size={40} />
              <Card.Title className="fw-bold">Total Time Spent</Card.Title>
-             <Card.Text as="h3" className="mb-0 text-primary">{totalTime} minutes</Card.Text>
+             <Card.Text as="h3" className="mb-0 text-primary">{formatTime(totalTime)}</Card.Text>
            </Card.Body>
          </Card>
        </Col>
@@ -93,7 +136,7 @@ const Time: React.FC = () => {
              <FaChartBar className="text-primary mb-3" size={40} />
              <Card.Title className="fw-bold">Average Time per Activity</Card.Title>
              <Card.Text as="h3" className="mb-0 text-primary">
-               {entries.length ? (totalTime / entries.length).toFixed(2) : 0} minutes
+               {entries.length ? formatTime(totalTime / entries.length) : 0}
              </Card.Text>
            </Card.Body>
          </Card>
@@ -107,20 +150,36 @@ const Time: React.FC = () => {
      </div>
 
      <ListGroup className="mx-auto" style={{ maxWidth: '800px' }}>
-       {entries.map((item, index) => (
-         <ListGroup.Item key={index} className="mb-3 border-0">
-           <Card className="shadow-sm border-0 bg-light">
-             <Card.Body className="d-flex justify-content-between align-items-center">
-               <div>
-                 <Card.Title className="fw-bold mb-1">{item.investedIn}</Card.Title>
-                 <Card.Text className="text-muted">{item.time} minutes</Card.Text>
-               </div>
-               <FaClock className="text-primary" size={24} />
-             </Card.Body>
-           </Card>
-         </ListGroup.Item>
-       ))}
-     </ListGroup>
+        {entries.map((item, index) => (
+          <ListGroup.Item key={index} className="mb-3 border-0">
+            <Card className="shadow-sm border-0 bg-light">
+            <Card.Body>
+                <div className="d-flex justify-content-between align-items-center mb-2">
+                  <Card.Title className="fw-bold mb-1">{item.investedIn}</Card.Title>
+                  <Dropdown align="end">
+                    <Dropdown.Toggle as={CustomToggle} id={`dropdown-${index}`}>
+                      <FaEllipsisV />
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      <Dropdown.Item onClick={() => handleEdit(item)}><FaEdit className="me-2" /> Edit</Dropdown.Item>
+                      <Dropdown.Item onClick={() => handleDelete(item)}><FaTrash className="me-2" /> Delete</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </div>
+                <div className="d-flex align-items-center mb-3">
+                  <FaHourglassHalf className="text-primary me-2" size={24} />
+                  <Card.Text className="text-primary fw-bold mb-0 fs-5">
+                    {formatTime(item.time)}
+                  </Card.Text>
+                </div>
+                <Card.Text className="text-muted small mb-0">
+                  Created on: {new Date(item.createdAt).toLocaleString()}
+                </Card.Text>
+              </Card.Body>
+            </Card>
+          </ListGroup.Item>
+        ))}
+      </ListGroup>
 
      <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>

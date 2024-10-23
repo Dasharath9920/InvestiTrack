@@ -1,14 +1,17 @@
 import React, {useState, useEffect} from 'react';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import { FaDollarSign, FaClock, FaPlus } from 'react-icons/fa';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { ACCESS_TOKEN } from '../constants/constants';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
   const user = useSelector((state: any) => state.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
 
   const fetchData = async () => {
-    const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
     const resp = await fetch('http://localhost:3000/api/entries/dashboard',{
       headers: {
         'Authorization': `Bearer ${authToken}`
