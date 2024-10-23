@@ -1,9 +1,23 @@
-import { Navbar, Nav, Container, Image, Button, NavDropdown } from 'react-bootstrap';
+import React from 'react';
+import { Navbar, Nav, Container, Image, Button, Dropdown } from 'react-bootstrap';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { IoPerson, IoLogIn } from "react-icons/io5";
 import { useDispatch, useSelector } from 'react-redux';
 import { ACCESS_TOKEN } from '../constants/constants';
 import actionTypes from '../constants/actionTypes';
+
+const CustomToggle = React.forwardRef(({ children, onClick }: { children: React.ReactNode, onClick: (event: React.MouseEvent<HTMLDivElement>) => void }, ref: React.Ref<HTMLDivElement>) => (
+  <div
+    ref={ref}
+    onClick={(e) => {
+      e.preventDefault();
+      onClick(e);
+    }}
+    style={{cursor: 'pointer'}}
+  >
+    {children}
+  </div>
+));
 
 const CustomNavbar = () => {
   const user = useSelector((state: any) => state.user);
@@ -41,20 +55,20 @@ const CustomNavbar = () => {
           <Nav>
             {user.isLoggedIn ? (
               <>
-              <NavDropdown
-              title={
-                <div className="d-flex align-items-center">
-                  <div className="d-flex align-items-center justify-content-center bg-light rounded-circle p-2 me-2">
-                    <IoPerson size={20} className="text-primary" />
-                  </div>
-                  <span className="text-dark">{user.username}</span>
-                </div>
-              }
-              id="basic-nav-dropdown"
-            >
-              <NavDropdown.Item as={Link} to="/profile">Profile</NavDropdown.Item>
-              <NavDropdown.Item onClick={logoutHandler}>Logout</NavDropdown.Item>
-            </NavDropdown>
+                <Dropdown align="end">
+                  <Dropdown.Toggle as={CustomToggle} id={`dropdown`}>
+                    <div className="d-flex align-items-center">
+                      <div className="d-flex align-items-center justify-content-center bg-light rounded-circle p-2 me-2">
+                        <IoPerson size={20} className="text-primary" />
+                      </div>
+                      <span className="text-dark">{user.username}</span>
+                    </div>
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu>
+                    <Dropdown.Item onClick={() => navigate('/profile')}>Profile</Dropdown.Item>
+                    <Dropdown.Item onClick={logoutHandler}>Logout</Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
               </>
             ) : (
               <Nav.Link as={Link} to="/login" className="me-2">
