@@ -39,7 +39,7 @@ function App() {
         type: actionTypes.SET_USER,
         payload: {
           isLoggedIn: true,
-          username: data.userName,
+          username: data.username,
           email: data.email
         }
       });
@@ -47,7 +47,7 @@ function App() {
   }
 
   useEffect(() => {
-    if(!user.isLoggedIn){
+    if(!user.isLoggedIn || !user.username || !user.email){
       initializeUser();
     }
   },[]);

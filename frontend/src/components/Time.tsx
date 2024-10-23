@@ -29,22 +29,34 @@ const Time: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [currentEntry, setCurrentEntry] = useState<TimeEntry>(initialEntry);
   const [editing, setEditing] = useState(false);
+  const [validated, setValidated] = useState(true);
   const user = useSelector((state: any) => state.user);
 
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
 
-  const handleAddEntry = async () => {
+  const handleAddEntry = async (e: any) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    if(form.checkValidity() === false){
+      setValidated(false);
+      e.stopPropagation();
+      return;
+    }
+
+    setValidated(true);
     if(currentEntry.investedIn && currentEntry.time > 0){
       const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
       const bodyData = editing ? {
         investedIn: currentEntry.investedIn,
         time: currentEntry.time,
         userId: currentEntry.userId,
-        entryId: currentEntry._id
+        entryId: currentEntry._id,
+        otherCategory: currentEntry.otherCategory
       } : {
         investedIn: currentEntry.investedIn,
-        time: currentEntry.time
+        time: currentEntry.time,
+        otherCategory: currentEntry.otherCategory
       }
       const resp = await fetch('http://localhost:3000/api/entries/time',{
         method: editing ? 'PUT' : 'POST',
@@ -60,6 +72,7 @@ const Time: React.FC = () => {
         setEditing(false);
         setCurrentEntry(initialEntry);
         handleClose();
+        setValidated(true);
       }
       else{
         console.log('error: ',data);
@@ -168,7 +181,7 @@ const Time: React.FC = () => {
             <Card className="shadow-sm border-0 bg-light">
             <Card.Body>
                 <div className="d-flex justify-content-between align-items-center mb-2">
-                  <Card.Title className="fw-bold mb-1">{item.investedIn}</Card.Title>
+                  <Card.Title className="fw-bold mb-1">{item.investedIn} {item.otherCategory && `(${item.otherCategory})`}</Card.Title>
                   <Dropdown align="end">
                     <Dropdown.Toggle as={CustomToggle} id={`dropdown-${index}`}>
                       <FaEllipsisV />
@@ -199,7 +212,7 @@ const Time: React.FC = () => {
           <Modal.Title>{editing ? 'Edit Time Entry' : 'Add New Time Entry'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form>
+          <Form noValidate validated={validated} onSubmit={(e) => handleAddEntry(e)}>
             <Form.Group className="mb-3">
               <Form.Label>Activity</Form.Label>
               <Form.Select
@@ -213,13 +226,31 @@ const Time: React.FC = () => {
                 })}
               </Form.Select>
             </Form.Group>
+            {currentEntry.investedIn === TIME_CATEGORIES.OTHER && <Form.Group className="mb-3">
+              <Form.Label>Custom activity</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder='Enter other activity'
+                required
+                value={currentEntry.otherCategory}
+                onChange={(e) => setCurrentEntry({...currentEntry, otherCategory: e.target.value})}
+              />
+              <Form.Control.Feedback type="invalid">
+                Please provide a valid activity.
+              </Form.Control.Feedback>
+            </Form.Group>}
             <Form.Group className="mb-3">
               <Form.Label>Duration (minutes)</Form.Label>
               <Form.Control
                 type="number"
+                required
+                min={1}
                 value={currentEntry.time}
                 onChange={(e) => setCurrentEntry({...currentEntry, time: Number(e.target.value)})}
               />
+              <Form.Control.Feedback type="invalid">
+                Please enter a valid duration (minimum 1 minute).
+              </Form.Control.Feedback>
             </Form.Group>
           </Form>
         </Modal.Body>
@@ -227,7 +258,7 @@ const Time: React.FC = () => {
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleAddEntry}>
+          <Button type='submit' variant="primary" onClick={(e) => handleAddEntry(e)}>
             {editing ? 'Update' : 'Add'}
           </Button>
         </Modal.Footer>

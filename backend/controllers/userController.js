@@ -69,7 +69,7 @@ export const updateUser = asyncHandler(async(req, res) => {
          throw new Error('User with this email does not exist');
       }
 
-
+      res.status(200).json({success: true, user: existingUser});
    } catch(err) {
       res.status(500).json({success: false, message: err.message});
    }

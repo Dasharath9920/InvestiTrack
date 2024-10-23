@@ -13,6 +13,9 @@ const amountSchema = new mongoose.Schema({
    spentOn: {
       type: String,
       required: [true, 'Spent on is required']
+   },
+   otherCategory: {
+      type: String
    }
 }, {timestamps: true});
 

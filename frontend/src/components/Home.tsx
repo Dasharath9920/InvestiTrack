@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react';
 import { Container, Row, Col, Card, Button, Spinner } from 'react-bootstrap';
-import { FaDollarSign, FaClock, FaPlus } from 'react-icons/fa';
+import { FaRupeeSign, FaClock, FaPlus } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { ACCESS_TOKEN } from '../constants/constants';
 import { formatTime } from '../helper';
@@ -47,7 +47,7 @@ const Home = () => {
             <div className="d-flex justify-content-between align-items-center mb-1">
               <h6 className="text-muted m-0">Total Spent</h6>
               <div className="stat-icon bg-primary-subtle p-2 rounded-circle">
-                <FaDollarSign size={24} className="text-primary" />
+                <FaRupeeSign size={24} className="text-primary" />
               </div>
             </div>
             <h2 className="display-5 fw-bold mb-0">₹{statistics.totalAmount}</h2>
@@ -77,7 +77,7 @@ const Home = () => {
               <Card.Body className="py-2">
                 <div className="d-flex justify-content-between align-items-center">
                   <div>
-                    <h6 className="mb-0 fs-6">{entry.investedIn}</h6>
+                    <h6 className="mb-0 fs-6">{entry.investedIn} {entry.otherCategory && `(${entry.otherCategory})`}</h6>
                     <small className="text-muted">{new Date(entry.createdAt!).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</small>
                     </div>
                   <div className="text-end">
@@ -95,7 +95,7 @@ const Home = () => {
               <Card.Body className="py-2">
                 <div className="d-flex justify-content-between align-items-center">
                   <div>
-                    <h6 className="mb-0 fs-6">{entry.spentOn}</h6>
+                    <h6 className="mb-0 fs-6">{entry.spentOn} {entry.otherCategory && `(${entry.otherCategory})`}</h6>
                     <small className="text-muted">{new Date(entry.createdAt!).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</small>
                     </div>
                   <div className="text-end">

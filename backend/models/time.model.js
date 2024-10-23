@@ -13,6 +13,9 @@ const timeSchema = new mongoose.Schema({
    investedIn: {
       type: String,
       required: [true, 'Invested in is required']
+   },
+   otherCategory: {
+      type: String
    }
 }, {timestamps: true});
 

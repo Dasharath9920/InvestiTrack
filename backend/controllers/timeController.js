@@ -12,12 +12,12 @@ export const getAllTimeData = asyncHandler(async (req, res) => {
 
 export const createTimeData = asyncHandler(async (req, res) => {
    try{
-      const {time, investedIn} = req.body;
+      const {time, investedIn, otherCategory} = req.body;
       if(!time || !investedIn){
          throw new Error('All fields are required');
       }
 
-      const newTimeData = new Time({time, investedIn, userId: req.user.id});
+      const newTimeData = new Time({time, investedIn, userId: req.user.id, otherCategory});
       await newTimeData.save();
       res.status(201).json({success: true, newTimeData});
    } catch(err) {
@@ -45,7 +45,7 @@ export const deleteTimeData = asyncHandler(async (req, res) => {
 
 export const updateTimeData = asyncHandler(async (req, res) => {
    try {
-      const {entryId, time, investedIn, userId} = req.body;
+      const {entryId, time, investedIn, userId, otherCategory} = req.body;
       if(!entryId || !time || !investedIn || !userId){
          throw new Error('All fields are required');
       }

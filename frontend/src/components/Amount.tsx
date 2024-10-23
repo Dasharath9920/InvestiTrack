@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, Form, ListGroup, Card, Container, Row, Col, Dropdown } from 'react-bootstrap';
-import { FaPlus, FaDollarSign, FaList, FaChartBar, FaEdit, FaTrash, FaEllipsisV } from 'react-icons/fa';
+import { FaPlus, FaRupeeSign, FaList, FaChartBar, FaEdit, FaTrash, FaEllipsisV } from 'react-icons/fa';
 import { AMOUNT_CATEGORIES, ACCESS_TOKEN } from '../constants/constants';
 import { AmountEntry } from '../constants/dataTypes';
 import { useSelector } from 'react-redux';
@@ -27,22 +27,33 @@ const Amount: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [currentEntry, setCurrentEntry] = useState<AmountEntry>(initialEntry);
   const [editing, setEditing] = useState(false);
+  const [validated, setValidated] = useState(false);
   const user = useSelector((state: any) => state.user);
 
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
 
-  const handleAddEntry = async () => {
+  const handleAddEntry = async (e: any) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    if(form.checkValidity() === false){
+      e.stopPropagation();
+      return;
+    }
+    setValidated(true);
+
     if (currentEntry?.spentOn && currentEntry.amount > 0) {
       const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
       const bodyData = editing? {
         spentOn: currentEntry.spentOn,
         amount: currentEntry.amount,
         userId: currentEntry.userId,
-        entryId: currentEntry._id
+        entryId: currentEntry._id,
+        otherCategory: currentEntry.otherCategory
       } : {
         spentOn: currentEntry.spentOn,
-        amount: currentEntry.amount
+        amount: currentEntry.amount,
+        otherCategory: currentEntry.otherCategory
       }
       const resp = await fetch('http://localhost:3000/api/entries/amount',{
         method: editing ? 'PUT' : 'POST',
@@ -128,7 +139,7 @@ const Amount: React.FC = () => {
         <Col md={4} className="mb-4 mb-md-0">
           <Card className="h-100 shadow border-0 bg-light">
             <Card.Body className="d-flex flex-column justify-content-center align-items-center">
-              <FaDollarSign className="text-success mb-3" size={40} />
+              <FaRupeeSign className="text-success mb-3" size={40} />
               <Card.Title className="fw-bold">Total Amount Spent</Card.Title>
               <Card.Text as="h3" className="mb-0 text-success">₹{totalAmount.toFixed(2)}</Card.Text>
             </Card.Body>
@@ -168,7 +179,7 @@ const Amount: React.FC = () => {
             <Card className="shadow-sm border-0 bg-light">
               <Card.Body>
                 <div className="d-flex justify-content-between align-items-center mb-2">
-                  <Card.Title className="fw-bold mb-0">{item.spentOn}</Card.Title>
+                  <Card.Title className="fw-bold mb-0">{item.spentOn} {item.otherCategory && `(${item.otherCategory})`}</Card.Title>
                   <Dropdown align="end">
                     <Dropdown.Toggle as={CustomToggle} id={`dropdown-${index}`}>
                       <FaEllipsisV />
@@ -194,7 +205,7 @@ const Amount: React.FC = () => {
           <Modal.Title>Add New Expense</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form>
+          <Form noValidate validated={validated} onSubmit={(e) => handleAddEntry(e)}>
             <Form.Group className="mb-3">
               <Form.Label>Category</Form.Label>
               <Form.Select
@@ -208,14 +219,31 @@ const Amount: React.FC = () => {
                 })}
               </Form.Select>
             </Form.Group>
+            {currentEntry.spentOn === AMOUNT_CATEGORIES.OTHER && <Form.Group className="mb-3">
+              <Form.Label>Custom category</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder='Enter how did you spend the amount'
+                required
+                value={currentEntry.otherCategory}
+                onChange={(e) => setCurrentEntry({...currentEntry, otherCategory: e.target.value})}
+              />
+              <Form.Control.Feedback type="invalid">
+                Please provide a valid category.
+              </Form.Control.Feedback>
+            </Form.Group>}
             <Form.Group className="mb-3">
               <Form.Label>Amount (₹)</Form.Label>
               <Form.Control
                 type="number"
-                step="0.01"
+                required
+                min={1}
                 value={currentEntry.amount}
                 onChange={(e) => setCurrentEntry({...currentEntry, amount: Number(e.target.value)})}
               />
+              <Form.Control.Feedback type="invalid">
+                Please enter a valid amount (minimum 1).
+              </Form.Control.Feedback>
             </Form.Group>
           </Form>
         </Modal.Body>
@@ -223,7 +251,7 @@ const Amount: React.FC = () => {
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button variant="success" onClick={handleAddEntry}>
+          <Button type='submit' variant="success" onClick={(e) => handleAddEntry(e)}>
             {editing ? 'Update Expense' : 'Add Expense'}
           </Button>
         </Modal.Footer>

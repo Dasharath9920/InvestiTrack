@@ -12,12 +12,12 @@ export const getAllMoneyData = asyncHandler(async (req, res) => {
 
 export const createMoneyData = asyncHandler(async (req, res) => {
    try{
-      const {amount, spentOn} = req.body;
+      const {amount, spentOn, otherCategory} = req.body;
       if(!amount || !spentOn){
          throw new Error('All fields are required');
       }
 
-      const newMoneyData = new Amount({amount, spentOn, userId: req.user.id});
+      const newMoneyData = new Amount({amount, spentOn, userId: req.user.id, otherCategory});
       await newMoneyData.save();
       res.status(201).json({success: true, newMoneyData});
    } catch(err) {

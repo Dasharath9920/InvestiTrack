@@ -31,6 +31,7 @@ export type TimeEntry = {
    createdAt?: string;
    _id?: string;
    userId?: string;
+   otherCategory?: string;
 }
 
 export type AmountEntry = {
@@ -39,4 +40,5 @@ export type AmountEntry = {
    createdAt?: string;
    _id?: string;
    userId?: string;
+   otherCategory?: string;
 }
