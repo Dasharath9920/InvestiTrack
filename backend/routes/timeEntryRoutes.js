@@ -8,6 +8,6 @@ timeEntryRoutes.use(validateToken);
 timeEntryRoutes.get('/', getAllTimeData);
 timeEntryRoutes.post('/', createTimeData);
 timeEntryRoutes.delete('/', deleteTimeData);
-timeEntryRoutes.put('/:id', updateTimeData);
+timeEntryRoutes.put('/', updateTimeData);
 
 export default timeEntryRoutes;

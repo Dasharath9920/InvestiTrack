@@ -1,11 +1,25 @@
 import { Navbar, Nav, Container, Image, Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { IoPerson, IoLogIn, IoLogOut } from "react-icons/io5";
 import { useDispatch, useSelector } from 'react-redux';
+import { ACCESS_TOKEN } from '../constants/constants';
 
 const CustomNavbar = () => {
   const user = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const logoutHandler = () => {
+    dispatch({
+      type: 'SET_USER',
+      payload: {
+        isLoggedIn: false,
+        user: null
+      }
+    });
+    localStorage.removeItem(ACCESS_TOKEN);
+    navigate('/login');
+  };
 
   return (
     <Navbar expand="lg">
@@ -28,12 +42,10 @@ const CustomNavbar = () => {
                   <IoPerson size={20} className="me-1" />
                   Profile
                 </Nav.Link>
-                <Nav.Link as={Link} to="/logout" className="me-2">
-                  <Button variant="primary">
-                    <IoLogOut size={20} className="me-1" />
-                    Logout
-                  </Button>
-                </Nav.Link>
+                <Button variant="primary" onClick={logoutHandler}>
+                  <IoLogOut size={20} className="me-1" />
+                  Logout
+                </Button>
               </>
             ) : (
               <Nav.Link as={Link} to="/login" className="me-2">

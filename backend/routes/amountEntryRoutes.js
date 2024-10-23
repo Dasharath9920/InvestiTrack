@@ -8,6 +8,6 @@ moneyEntryRoutes.use(validateToken);
 moneyEntryRoutes.get('/', getAllMoneyData);
 moneyEntryRoutes.post('/', createMoneyData);
 moneyEntryRoutes.delete('/', deleteMoneyData);
-moneyEntryRoutes.put('/:id', updateMoneyData);
+moneyEntryRoutes.put('/', updateMoneyData);
 
 export default moneyEntryRoutes;

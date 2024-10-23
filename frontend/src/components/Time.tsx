@@ -7,7 +7,14 @@ import { formatTime, getTimeDescription } from '../helper';
 interface TimeEntry {
   investedIn: string;
   time: number;
-  createdAt: string;
+  createdAt?: string;
+  _id?: string;
+  userId?: string;
+}
+
+const initialEntry: TimeEntry = {
+  investedIn: Object.values(TIME_CATEGORIES)[0],
+  time: 0
 }
 
 const CustomToggle = React.forwardRef(({ children, onClick }: { children: React.ReactNode, onClick: (event: React.MouseEvent<HTMLDivElement>) => void }, ref: React.Ref<HTMLDivElement>) => (
@@ -26,30 +33,37 @@ const CustomToggle = React.forwardRef(({ children, onClick }: { children: React.
 const Time: React.FC = () => {
   const [entries, setEntries] = useState<TimeEntry[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [newActivity, setNewActivity] = useState(Object.values(TIME_CATEGORIES)[0]);
-  const [newDuration, setNewDuration] = useState(0);
+  const [currentEntry, setCurrentEntry] = useState<TimeEntry>(initialEntry);
+  const [editing, setEditing] = useState(false);
 
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
 
   const handleAddEntry = async () => {
-    if (newActivity && newDuration > 0) {
-      setEntries([...entries, { investedIn: newActivity, time: newDuration, createdAt: new Date().toISOString() }]);
-      setNewActivity('');
-      setNewDuration(0);
+    if(currentEntry.investedIn && currentEntry.time > 0){
       const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
+      const bodyData = editing ? {
+        investedIn: currentEntry.investedIn,
+        time: currentEntry.time,
+        userId: currentEntry.userId,
+        entryId: currentEntry._id
+      } : {
+        investedIn: currentEntry.investedIn,
+        time: currentEntry.time
+      }
       const resp = await fetch('http://localhost:3000/api/entries/time',{
-        method: 'POST',
+        method: editing ? 'PUT' : 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${authToken}`
         },
-        body: JSON.stringify({investedIn: newActivity, time: newDuration})
+        body: JSON.stringify(bodyData)
       });
       const data = await resp.json();
       if(data.success){
-        console.log('data: ',data);
         fetchTimeData();
+        setEditing(false);
+        setCurrentEntry(initialEntry);
         handleClose();
       }
       else{
@@ -59,7 +73,9 @@ const Time: React.FC = () => {
   };
 
   const handleEdit = async (item: TimeEntry) => {
-    console.log('item: ',item);
+    setEditing(true);
+    setCurrentEntry(item);
+    handleShow();
   };
 
   const handleDelete = async (item: any) => {
@@ -173,7 +189,7 @@ const Time: React.FC = () => {
                   </Card.Text>
                 </div>
                 <Card.Text className="text-muted small mb-0">
-                  Created on: {new Date(item.createdAt).toLocaleString()}
+                  Created on: {new Date(item.createdAt || '').toLocaleString()}
                 </Card.Text>
               </Card.Body>
             </Card>
@@ -183,15 +199,15 @@ const Time: React.FC = () => {
 
      <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Add New Time Entry</Modal.Title>
+          <Modal.Title>{editing ? 'Edit Time Entry' : 'Add New Time Entry'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             <Form.Group className="mb-3">
               <Form.Label>Activity</Form.Label>
               <Form.Select
-                value={newActivity}
-                onChange={(e) => setNewActivity(e.target.value)}
+                value={currentEntry.investedIn}
+                onChange={(e) => setCurrentEntry({...currentEntry, investedIn: e.target.value})}
               >
                 {categories.map((category: string) => {
                   return <option key={category} value={category}>
@@ -204,8 +220,8 @@ const Time: React.FC = () => {
               <Form.Label>Duration (minutes)</Form.Label>
               <Form.Control
                 type="number"
-                value={newDuration}
-                onChange={(e) => setNewDuration(Number(e.target.value))}
+                value={currentEntry.time}
+                onChange={(e) => setCurrentEntry({...currentEntry, time: Number(e.target.value)})}
               />
             </Form.Group>
           </Form>
@@ -215,7 +231,7 @@ const Time: React.FC = () => {
             Close
           </Button>
           <Button variant="primary" onClick={handleAddEntry}>
-            Add Entry
+            {editing ? 'Update' : 'Add'}
           </Button>
         </Modal.Footer>
       </Modal>

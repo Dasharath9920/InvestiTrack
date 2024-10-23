@@ -67,6 +67,7 @@ const Login = () => {
 
     if(data.success){
       alert('User registered successfully');
+      setTab('login');
     }
     else{
       alert('Error: '+ data.message);

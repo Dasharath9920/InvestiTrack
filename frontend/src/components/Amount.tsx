@@ -6,7 +6,14 @@ import { AMOUNT_CATEGORIES, ACCESS_TOKEN } from '../constants/constants';
 interface AmountEntry {
   spentOn: string;
   amount: number;
-  createdAt: string;
+  createdAt?: string;
+  _id?: string;
+  userId?: string;
+}
+
+const initialEntry: AmountEntry = {
+  spentOn: Object.values(AMOUNT_CATEGORIES)[0],
+  amount: 0
 }
 
 const CustomToggle = React.forwardRef(({ children, onClick }: { children: React.ReactNode, onClick: (event: React.MouseEvent<HTMLDivElement>) => void }, ref: React.Ref<HTMLDivElement>) => (
@@ -25,42 +32,50 @@ const CustomToggle = React.forwardRef(({ children, onClick }: { children: React.
 const Amount: React.FC = () => {
   const [entries, setEntries] = useState<AmountEntry[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [newCategory, setNewCategory] = useState(Object.values(AMOUNT_CATEGORIES)[0]);
-  const [newAmount, setNewAmount] = useState(0);
+  const [currentEntry, setCurrentEntry] = useState<AmountEntry>(initialEntry);
+  const [editing, setEditing] = useState(false);
 
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
 
   const handleAddEntry = async () => {
-    if (newCategory && newAmount > 0) {
-      setEntries([...entries, { spentOn: newCategory, amount: newAmount, createdAt: new Date().toISOString() }]);
-      setNewCategory('');
-      setNewAmount(0);
+    if (currentEntry?.spentOn && currentEntry.amount > 0) {
       const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
+      const bodyData = editing? {
+        spentOn: currentEntry.spentOn,
+        amount: currentEntry.amount,
+        userId: currentEntry.userId,
+        entryId: currentEntry._id
+      } : {
+        spentOn: currentEntry.spentOn,
+        amount: currentEntry.amount
+      }
       const resp = await fetch('http://localhost:3000/api/entries/amount',{
-        method: 'POST',
+        method: editing ? 'PUT' : 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${authToken}`
         },
-        body: JSON.stringify({spentOn: newCategory, amount: newAmount})
+        body: JSON.stringify(bodyData)
       });
       const data = await resp.json();
 
       if(data.success){
-        console.log('data: ',data);
         fetchAmountData();
+        setEditing(false);
+        setCurrentEntry(initialEntry);
         handleClose();
       }
       else{
         console.log('error: ',data);
       }
-
     }
   };
 
   const handleEdit = async (item: AmountEntry) => {
-    console.log('item: ',item);
+    handleShow();
+    setCurrentEntry(item);
+    setEditing(true);
   }
 
   const handleDelete = async (item: any) => {
@@ -170,7 +185,7 @@ const Amount: React.FC = () => {
                 </div>
                 <Card.Text className="text-success fs-4 mb-2">₹{item.amount.toFixed(2)}</Card.Text>
                 <Card.Text className="text-muted small mb-0">
-                  Created on: {new Date(item.createdAt).toLocaleString()}
+                  Created on: {new Date(item.createdAt || '').toLocaleString()}
                 </Card.Text>
               </Card.Body>
             </Card>
@@ -187,8 +202,8 @@ const Amount: React.FC = () => {
             <Form.Group className="mb-3">
               <Form.Label>Category</Form.Label>
               <Form.Select
-                value={newCategory}
-                onChange={(e) => setNewCategory(e.target.value)}
+                value={currentEntry.spentOn}
+                onChange={(e) => setCurrentEntry({...currentEntry, spentOn: e.target.value})}
               >
                 {categories.map((category: string) => {
                   return <option key={category} value={category}>
@@ -202,8 +217,8 @@ const Amount: React.FC = () => {
               <Form.Control
                 type="number"
                 step="0.01"
-                value={newAmount}
-                onChange={(e) => setNewAmount(Number(e.target.value))}
+                value={currentEntry.amount}
+                onChange={(e) => setCurrentEntry({...currentEntry, amount: Number(e.target.value)})}
               />
             </Form.Group>
           </Form>
@@ -213,7 +228,7 @@ const Amount: React.FC = () => {
             Close
           </Button>
           <Button variant="success" onClick={handleAddEntry}>
-            Add Expense
+            {editing ? 'Update Expense' : 'Add Expense'}
           </Button>
         </Modal.Footer>
       </Modal>
