@@ -17,3 +17,26 @@ export type LoginResponse = {
    userName?: string;
    email?: string;
 }
+
+export type Statistics = {
+   totalAmount: number;
+   totalTime: number;
+   recentTimeEntries: TimeEntry[];
+   recentAmountEntries: AmountEntry[];
+}
+
+export type TimeEntry = {
+   investedIn: string;
+   time: number;
+   createdAt?: string;
+   _id?: string;
+   userId?: string;
+}
+
+export type AmountEntry = {
+   spentOn: string;
+   amount: number;
+   createdAt?: string;
+   _id?: string;
+   userId?: string;
+}

@@ -2,15 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Button, Modal, Form, ListGroup, Card, Container, Row, Col, Dropdown } from 'react-bootstrap';
 import { FaPlus, FaDollarSign, FaList, FaChartBar, FaEdit, FaTrash, FaEllipsisV } from 'react-icons/fa';
 import { AMOUNT_CATEGORIES, ACCESS_TOKEN } from '../constants/constants';
-
-interface AmountEntry {
-  spentOn: string;
-  amount: number;
-  createdAt?: string;
-  _id?: string;
-  userId?: string;
-}
-
+import { AmountEntry } from '../constants/dataTypes';
+import { useSelector } from 'react-redux';
 const initialEntry: AmountEntry = {
   spentOn: Object.values(AMOUNT_CATEGORIES)[0],
   amount: 0
@@ -34,6 +27,7 @@ const Amount: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [currentEntry, setCurrentEntry] = useState<AmountEntry>(initialEntry);
   const [editing, setEditing] = useState(false);
+  const user = useSelector((state: any) => state.user);
 
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
@@ -118,7 +112,9 @@ const Amount: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchAmountData();
+    if(user.isLoggedIn){
+      fetchAmountData();
+    }
   }, []);
 
   const totalAmount: number = entries.reduce((sum, entry) => sum + entry.amount, 0);

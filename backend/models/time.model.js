@@ -7,7 +7,7 @@ const timeSchema = new mongoose.Schema({
       required: [true, 'User is required']
    },
    time: {
-      type: String,
+      type: Number,
       required: [true, 'Time is required']
    },
    investedIn: {

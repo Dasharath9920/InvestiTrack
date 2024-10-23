@@ -1,4 +1,5 @@
 export const TABS = {
+   DASHBOARD: 'dashboard',
    HOME: 'home',
    TIME: 'time',
    AMOUNT: 'amount',

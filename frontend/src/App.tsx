@@ -8,6 +8,7 @@ import Amount from './components/Amount';
 import Statistics from './components/Statistics';
 import Settings from './components/Settings';
 import Login from './components/Login';
+import Profile from './components/Profile';
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { ACCESS_TOKEN } from './constants/constants';
@@ -21,7 +22,6 @@ function App() {
 
   const initializeUser = async () => {
     const authToken = localStorage.getItem(ACCESS_TOKEN)? JSON.parse(localStorage.getItem(ACCESS_TOKEN)!): '';
-    console.log('here: ',user, authToken);
     if(!authToken){
       localStorage.removeItem(ACCESS_TOKEN);
       navigate('/login');
@@ -61,6 +61,7 @@ function App() {
         <Route path='/amount' element={<Amount />} />
         <Route path='/statistics' element={<Statistics />} />
         <Route path='/settings' element={<Settings />} />
+        <Route path='/profile' element={<Profile />} />
         <Route path='/login' element={<Login />} />
       </Routes>
     </div>

@@ -1,8 +1,9 @@
-import { Navbar, Nav, Container, Image, Button } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
-import { IoPerson, IoLogIn, IoLogOut } from "react-icons/io5";
+import { Navbar, Nav, Container, Image, Button, NavDropdown } from 'react-bootstrap';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { IoPerson, IoLogIn } from "react-icons/io5";
 import { useDispatch, useSelector } from 'react-redux';
 import { ACCESS_TOKEN } from '../constants/constants';
+import actionTypes from '../constants/actionTypes';
 
 const CustomNavbar = () => {
   const user = useSelector((state: any) => state.user);
@@ -11,10 +12,11 @@ const CustomNavbar = () => {
 
   const logoutHandler = () => {
     dispatch({
-      type: 'SET_USER',
+      type: actionTypes.SET_USER,
       payload: {
         isLoggedIn: false,
-        user: null
+        username: '',
+        email: ''
       }
     });
     localStorage.removeItem(ACCESS_TOKEN);
@@ -30,22 +32,29 @@ const CustomNavbar = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className='justify-content-end flex-grow-1 pe-3 me-5'>
-            <Nav.Link as={Link} to="/time" className="me-3">Time</Nav.Link>
-            <Nav.Link as={Link} to="/amount" className="me-3">Amount</Nav.Link>
-            <Nav.Link as={Link} to="/statistics" className="me-3">Statistics</Nav.Link>
-            <Nav.Link as={Link} to="/settings">Settings</Nav.Link>
+            <NavLink to="/" className={({ isActive }) => `nav-link me-3 ${isActive ? 'active' : ''}`}>Dashboard</NavLink>
+            <NavLink to="/time" className={({ isActive }) => `nav-link me-3 ${isActive ? 'active' : ''}`}>Time</NavLink>
+            <NavLink to="/amount" className={({ isActive }) => `nav-link me-3 ${isActive ? 'active' : ''}`}>Amount</NavLink>
+            <NavLink to="/statistics" className={({ isActive }) => `nav-link me-3 ${isActive ? 'active' : ''}`}>Statistics</NavLink>
+            <NavLink to="/settings" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>Settings</NavLink>
           </Nav>
           <Nav>
             {user.isLoggedIn ? (
               <>
-                <Nav.Link as={Link} to="/profile" className="me-2">
-                  <IoPerson size={20} className="me-1" />
-                  Profile
-                </Nav.Link>
-                <Button variant="primary" onClick={logoutHandler}>
-                  <IoLogOut size={20} className="me-1" />
-                  Logout
-                </Button>
+              <NavDropdown
+              title={
+                <div className="d-flex align-items-center">
+                  <div className="d-flex align-items-center justify-content-center bg-light rounded-circle p-2 me-2">
+                    <IoPerson size={20} className="text-primary" />
+                  </div>
+                  <span className="text-dark">{user.username}</span>
+                </div>
+              }
+              id="basic-nav-dropdown"
+            >
+              <NavDropdown.Item as={Link} to="/profile">Profile</NavDropdown.Item>
+              <NavDropdown.Item onClick={logoutHandler}>Logout</NavDropdown.Item>
+            </NavDropdown>
               </>
             ) : (
               <Nav.Link as={Link} to="/login" className="me-2">

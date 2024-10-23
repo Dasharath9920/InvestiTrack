@@ -3,14 +3,8 @@ import { Button, Modal, Form, ListGroup, Card, Container, Row, Col, Dropdown } f
 import { FaPlus, FaClock, FaList, FaChartBar, FaEllipsisV, FaEdit, FaTrash, FaHourglassHalf } from 'react-icons/fa';
 import { TIME_CATEGORIES, ACCESS_TOKEN } from '../constants/constants';
 import { formatTime, getTimeDescription } from '../helper';
-
-interface TimeEntry {
-  investedIn: string;
-  time: number;
-  createdAt?: string;
-  _id?: string;
-  userId?: string;
-}
+import { TimeEntry } from '../constants/dataTypes';
+import { useSelector } from 'react-redux';
 
 const initialEntry: TimeEntry = {
   investedIn: Object.values(TIME_CATEGORIES)[0],
@@ -35,6 +29,7 @@ const Time: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [currentEntry, setCurrentEntry] = useState<TimeEntry>(initialEntry);
   const [editing, setEditing] = useState(false);
+  const user = useSelector((state: any) => state.user);
 
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
@@ -117,7 +112,9 @@ const Time: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchTimeData();
+    if(user.isLoggedIn){
+      fetchTimeData();
+    }
   }, []);
 
   const categories: string[] = Object.values(TIME_CATEGORIES);

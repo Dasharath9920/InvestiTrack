@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Tabs, Tab, Form, Button, Card } from 'react-bootstrap';
 import { RegisterResponse, LoginResponse } from '../constants/dataTypes';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import actionTypes from '../constants/actionTypes';
 import { ACCESS_TOKEN, EMAIL } from '../constants/constants';
@@ -14,7 +14,6 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  const state = useSelector((state: any) => state);
   const dispatch = useDispatch();
 
   const loginUser = async (e: React.FormEvent) => {
