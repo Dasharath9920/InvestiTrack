@@ -3,7 +3,6 @@ import validateToken from '../middleware/validateTokenHandler.js';
 import Time from '../models/time.model.js';
 import Amount from '../models/money.model.js';
 import mongoose from 'mongoose';
-// Assume we have a service to fetch the required data
 
 const dashboardRoutes = express.Router();
 
@@ -34,16 +33,16 @@ dashboardRoutes.get('/', async (req, res) => {
     ]);
     const totalAmount = totalAmountResult.length > 0? totalAmountResult[0].totalAmount: 0;
 
-    const response = {
+    const statistics = {
       totalTime,
       totalAmount,
       recentTimeEntries,
       recentAmountEntries
     }
-    res.status(200).json({success: true, statistics: response});
+
+    res.status(200).json({success: true, statistics});
   } catch (error) {
-    console.error('Error fetching dashboard stats:', error);
-    res.status(500).json({ message: 'Error fetching dashboard statistics' });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 

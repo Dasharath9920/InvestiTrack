@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, Form, ListGroup, Card, Container, Row, Col, Dropdown } from 'react-bootstrap';
-import { FaPlus, FaClock, FaList, FaChartBar, FaEllipsisV, FaEdit, FaTrash, FaHourglassHalf } from 'react-icons/fa';
+import { FaPlus, FaClock, FaList, FaChartBar, FaEllipsisV, FaEdit, FaTrash, FaHourglassHalf, FaChartLine } from 'react-icons/fa';
 import { TIME_CATEGORIES, ACCESS_TOKEN } from '../constants/constants';
 import { formatTime, getTimeDescription } from '../helper';
 import { TimeEntry } from '../constants/dataTypes';
@@ -142,8 +142,8 @@ const Time: React.FC = () => {
   const totalTime = entries.reduce((sum: number, entry: TimeEntry) => sum + Number(entry.time), 0);
 
   return (
-   <Container className="py-5">
-     <h1 className="mb-5 text-center display-4 fw-bold text-primary">Time Tracker</h1>
+   <Container className="py-3">
+     <h1 className="mb-5 text-center display-6 fw-bold text-primary">Time Tracker</h1>
      
      <Row className="mb-5 justify-content-center">
        <Col md={4} className="mb-4 mb-md-0">
@@ -177,48 +177,52 @@ const Time: React.FC = () => {
        </Col>
      </Row>
 
-     <div className="text-center mb-5">
+     {/* <div className="text-center mb-5">
        <Button variant="primary" onClick={handleShow} className="px-4 py-2 rounded-pill shadow-sm">
          <FaPlus className="me-2" /> Add New Entry
        </Button>
-     </div>
+     </div>  */}
 
-     <ListGroup className="mx-auto" style={{ maxWidth: '800px' }}>
-        {entries.map((item, index) => (
-          <ListGroup.Item key={index} className="mb-3 border-0">
-            <Card className="shadow-sm border-0 bg-light">
-            <Card.Body>
-                <div className="d-flex justify-content-between align-items-center mb-2">
-                  <Card.Title className="fw-bold mb-1">{item.investedIn} {item.otherCategory && `(${item.otherCategory})`}</Card.Title>
-                  <Dropdown align="end">
-                    <Dropdown.Toggle as={CustomToggle} id={`dropdown-${index}`}>
-                      <FaEllipsisV />
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                      <Dropdown.Item onClick={() => handleEdit(item)}><FaEdit className="me-2" /> Edit</Dropdown.Item>
-                      <Dropdown.Item onClick={() => handleDelete(item)}><FaTrash className="me-2" /> Delete</Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </div>
-                <div className="d-flex align-items-center mb-3">
-                  <FaHourglassHalf className="text-primary me-2" size={24} />
-                  <Card.Text className="text-primary fw-bold mb-0 fs-5">
-                    {formatTime(item.time)}
-                  </Card.Text>
-                </div>
-                <div className="d-flex justify-content-between text-muted small">
-                  <span>
-                    <strong>Spent on:</strong> {new Date(item.activityDate).toLocaleDateString()}
-                  </span>
-                  <span>
-                    <strong>Created:</strong> {new Date(item.createdAt || '').toLocaleString()}
-                  </span>
-                </div>
-              </Card.Body>
-            </Card>
-          </ListGroup.Item>
-        ))}
-      </ListGroup>
+     <Card className="shadow-sm">
+        <Card.Header className="bg-success text-white">
+          <FaChartLine className="me-2" /> Recent Amount Entries
+        </Card.Header>
+        <Card.Body>
+          <ListGroup className="mx-auto" style={{ maxWidth: '100%', height: '400px', overflowY: 'auto' }}>
+            {entries.map((item, index) => (
+              <ListGroup.Item key={index} className="mb-2 border-0">
+                <Card className="shadow-sm">
+                  <Card.Body>
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <Card.Title className="fw-bold mb-1">{item.investedIn} {item.otherCategory && `(${item.otherCategory})`}</Card.Title>
+                      <Dropdown align="end">
+                        <Dropdown.Toggle as={CustomToggle} id={`dropdown-${index}`}>
+                          <FaEllipsisV />
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu>
+                          <Dropdown.Item onClick={() => handleEdit(item)}><FaEdit className="me-2" /> Edit</Dropdown.Item>
+                          <Dropdown.Item onClick={() => handleDelete(item)}><FaTrash className="me-2" /> Delete</Dropdown.Item>
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    </div>
+                    <div className="d-flex align-items-end justify-content-between text-muted small">
+                      <div className="d-flex align-items-center mb-0">
+                        <FaHourglassHalf className="text-primary me-2" size={18} />
+                        <Card.Text className="text-primary fw-bold mb-0 fs-5">
+                          {formatTime(item.time)}
+                        </Card.Text>
+                      </div>
+                      <span>
+                        <strong>Spent on:</strong> {new Date(item.activityDate).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
+        </Card.Body>
+      </Card>
 
      <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
