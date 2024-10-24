@@ -1,31 +1,51 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Card, Image, Button, Form } from 'react-bootstrap';
-import { FaEdit, FaSave } from 'react-icons/fa';
-import { useSelector } from 'react-redux';
+import { FaEdit, FaSave, FaCamera, FaUser } from 'react-icons/fa';
+import { useSelector, useDispatch } from 'react-redux';
+import { ACCESS_TOKEN } from '../constants/constants';
+import { fetchAndUpdateUserDetails } from '../services/userService';
 
 const Profile = () => {
-   const user = useSelector((state: any) => state.user);
+  const user = useSelector((state: any) => state.user);
+  const dispatch = useDispatch();
   const [isEditing, setIsEditing] = useState(false);
-  const [profileData, setProfileData] = useState({
-    name: user.username,
-    email: user.email,
-    bio: 'Software developer passionate about creating beautiful and functional web applications.',
-    location: 'Hyderabad, India',
-    website: 'https://dasharath-9920.netlify.app/',
-  });
+  const [isHovering, setIsHovering] = useState(false);
+  const [file, setFile] = useState<any>(null);
 
-  const handleEdit = () => {
-    setIsEditing(true);
+  const handleUploadProfile = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
+    const formData = new FormData();
+    formData.append('name', 'profilePicture');
+    formData.append('profilePicture', file);
+
+    try{
+      const response: any = await fetch('http://localhost:3000/api/users/upload-profile-picture', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Authorization': `Bearer ${authToken}`
+        }
+      });
+
+      if(response.ok){
+        console.log('Profile picture uploaded successfully');
+        setFile(null);
+        setIsHovering(false);
+        fetchAndUpdateUserDetails(dispatch);
+      } else {
+        throw new Error('Failed to upload profile picture');
+      }
+    } catch (err) {
+      console.log('Error uploading profile picture: ', err);
+    }
   };
 
-  const handleSave = () => {
-    setIsEditing(false);
-    // Here you would typically send the updated data to your backend
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setProfileData(prevData => ({ ...prevData, [name]: value }));
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+    }
   };
 
   return (
@@ -34,16 +54,43 @@ const Profile = () => {
         <Col md={4}>
           <Card className="text-center">
             <Card.Body>
-              <Image
-                src="https://via.placeholder.com/150"
-                roundedCircle
-                className="mb-3"
-                style={{ width: '150px', height: '150px' }}
-              />
-              <Card.Title>{profileData.name}</Card.Title>
-              <Card.Text>{profileData.location}</Card.Text>
-              <Button variant="outline-primary" className="mt-2">
-                Change Profile Picture
+              <div 
+                className="position-relative d-inline-block mb-3"
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
+                style={{width: '150px', height: '150px'}}
+              >
+                {user.profilePicture ? (
+                  <Image
+                    src={user.profilePicture}
+                    roundedCircle
+                    className="mb-3"
+                    style={{ width: '150px', height: '150px' }}
+                  />
+                ) : (
+                  <div 
+                    className="d-flex justify-content-center align-items-center bg-light rounded-circle"
+                    style={{ width: '150px', height: '150px' }}
+                  >
+                    <FaUser size={64} color="#6c757d" />
+                  </div>
+                )}
+              <div className="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style={{ background: 'rgba(0,0,0,0.5)', borderRadius: '50%', cursor: 'pointer', visibility: isHovering ? 'visible' : 'hidden' }}>
+                  <label htmlFor="profilePictureInput" style={{ cursor: 'pointer' }}>
+                    <FaCamera color="white" size={24} />
+                  </label>
+                  <input
+                    id="profilePictureInput"
+                    type="file"
+                    onChange={handleFileChange}
+                    style={{ display: 'none' }}
+                  />
+                </div>
+              </div>
+              <Card.Title>{user.username}</Card.Title>
+              <Card.Text>Hyderabad, India</Card.Text>
+              <Button variant="outline-primary" className="mt-2" disabled={!file} onClick={(e) => handleUploadProfile(e)}>
+                {user.profilePicture? 'Update Profile Picture': 'Upload Profile Picture'}
               </Button>
             </Card.Body>
           </Card>
@@ -54,11 +101,11 @@ const Profile = () => {
               <div className="d-flex justify-content-between align-items-center mb-4">
                 <h2>Profile Information</h2>
                 {isEditing ? (
-                  <Button variant="success" onClick={handleSave}>
+                  <Button variant="success" onClick={() => setIsEditing(false)}>
                     <FaSave className="me-2" /> Save
                   </Button>
                 ) : (
-                  <Button variant="primary" onClick={handleEdit}>
+                  <Button variant="primary" onClick={() => setIsEditing(true)}>
                     <FaEdit className="me-2" /> Edit
                   </Button>
                 )}
@@ -69,8 +116,7 @@ const Profile = () => {
                   <Form.Control
                     type="text"
                     name="name"
-                    value={profileData.name}
-                    onChange={handleChange}
+                    value={user.username}
                     readOnly={!isEditing}
                   />
                 </Form.Group>
@@ -79,8 +125,7 @@ const Profile = () => {
                   <Form.Control
                     type="email"
                     name="email"
-                    value={profileData.email}
-                    onChange={handleChange}
+                    value={user.email}
                     readOnly={!isEditing}
                   />
                 </Form.Group>
@@ -90,8 +135,7 @@ const Profile = () => {
                     as="textarea"
                     rows={3}
                     name="bio"
-                    value={profileData.bio}
-                    onChange={handleChange}
+                    value={'Software developer passionate about creating beautiful and functional web applications.'}
                     readOnly={!isEditing}
                   />
                 </Form.Group>
@@ -100,8 +144,7 @@ const Profile = () => {
                   <Form.Control
                     type="text"
                     name="location"
-                    value={profileData.location}
-                    onChange={handleChange}
+                    value={'Hyderabad, India'}
                     readOnly={!isEditing}
                   />
                 </Form.Group>
@@ -110,8 +153,7 @@ const Profile = () => {
                   <Form.Control
                     type="url"
                     name="website"
-                    value={profileData.website}
-                    onChange={handleChange}
+                    value={'https://dasharath-9920.netlify.app/'}
                     readOnly={!isEditing}
                   />
                 </Form.Group>
@@ -125,3 +167,93 @@ const Profile = () => {
 };
 
 export default Profile;
+
+// ... existing imports ...
+// import { FaCamera } from 'react-icons/fa';
+
+// const Profile = () => {
+//   // ... existing code ...
+
+//   const [isHovering, setIsHovering] = useState(false);
+
+//   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     const selectedFile = e.target.files?.[0];
+//     if (selectedFile) {
+//       setFile(selectedFile);
+//       handleUploadProfile(selectedFile);
+//     }
+//   };
+
+//   const handleUploadProfile = async (selectedFile: File) => {
+//     const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
+//     const formData = new FormData();
+//     formData.append('name', 'profilePicture');
+//     formData.append('profilePicture', selectedFile);
+
+//     try {
+//       const response = await fetch('http://localhost:3000/api/users/upload-profile-picture', {
+//         method: 'POST',
+//         body: formData,
+//         headers: {
+//           'Authorization': `Bearer ${authToken}`
+//         }
+//       });
+
+//       if (response.ok) {
+//         const data = await response.json();
+//         console.log('Profile picture uploaded successfully: ', data);
+//         // You might want to update the user state here with the new profile picture
+//       } else {
+//         throw new Error('Failed to upload profile picture');
+//       }
+//     } catch (err) {
+//       console.log('Error uploading profile picture: ', err);
+//     }
+//   };
+
+//   return (
+//     <Container className="my-5">
+//       <Row>
+//         <Col md={4}>
+//           <Card className="text-center">
+//             <Card.Body>
+//               <div 
+//                 className="position-relative d-inline-block"
+//                 onMouseEnter={() => setIsHovering(true)}
+//                 onMouseLeave={() => setIsHovering(false)}
+//               >
+//                 <Image
+//                   src={user.profilePicture}
+//                   roundedCircle
+//                   className="mb-3"
+//                   style={{ width: '150px', height: '150px', cursor: 'pointer' }}
+//                 />
+//                 {isHovering && (
+//                   <div 
+//                     className="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
+//                     style={{ background: 'rgba(0,0,0,0.5)', borderRadius: '50%' }}
+//                   >
+//                     <label htmlFor="profilePictureInput" style={{ cursor: 'pointer' }}>
+//                       <FaCamera color="white" size={24} />
+//                     </label>
+//                     <input
+//                       id="profilePictureInput"
+//                       type="file"
+//                       accept="image/*"
+//                       onChange={handleFileChange}
+//                       style={{ display: 'none' }}
+//                     />
+//                   </div>
+//                 )}
+//               </div>
+//               {/* ... rest of the Card.Body content ... */}
+//             </Card.Body>
+//           </Card>
+//         </Col>
+//         {/* ... rest of the component ... */}
+//       </Row>
+//     </Container>
+//   );
+// };
+
+// export default Profile;

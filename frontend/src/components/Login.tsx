@@ -3,7 +3,7 @@ import { Container, Tabs, Tab, Form, Button, Card } from 'react-bootstrap';
 import { RegisterResponse, LoginResponse } from '../constants/dataTypes';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import actionTypes from '../constants/actionTypes';
+import { fetchAndUpdateUserDetails } from '../services/userService';
 import { ACCESS_TOKEN, EMAIL } from '../constants/constants';
 
 const Login = () => {
@@ -33,17 +33,10 @@ const Login = () => {
 
     const data: LoginResponse = await response.json();
     if(data.success){
-      dispatch({
-        type: actionTypes.SET_USER,
-        payload: {
-          isLoggedIn: true,
-          username: data.userName,
-          email: data.email
-        }
-      });
       localStorage.setItem(ACCESS_TOKEN, JSON.stringify(data.accessToken));
       localStorage.setItem(EMAIL, JSON.stringify(email));
-
+      
+      await fetchAndUpdateUserDetails(dispatch);
       navigate('/');
     }
     else{
@@ -57,6 +50,7 @@ const Login = () => {
       alert('Please fill all the fields');
       return;
     }
+
     const response = await fetch('http://localhost:3000/api/users/register', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},

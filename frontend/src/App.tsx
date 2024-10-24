@@ -9,10 +9,10 @@ import Statistics from './components/Statistics';
 import Settings from './components/Settings';
 import Login from './components/Login';
 import Profile from './components/Profile';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { ACCESS_TOKEN } from './constants/constants';
-import actionTypes from './constants/actionTypes';
+import { fetchAndUpdateUserDetails } from './services/userService';
 
 function App() {
 
@@ -27,22 +27,7 @@ function App() {
       navigate('/login');
     }
     if(!user.isLoggedIn && authToken){
-      const userDetails = await fetch(`http://localhost:3000/api/users/current`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`
-        }
-      });
-      const data = await userDetails.json();
-      dispatch({
-        type: actionTypes.SET_USER,
-        payload: {
-          isLoggedIn: true,
-          username: data.username,
-          email: data.email
-        }
-      });
+      fetchAndUpdateUserDetails(dispatch);
     }
   }
 

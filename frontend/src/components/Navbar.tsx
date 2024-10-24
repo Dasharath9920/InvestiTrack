@@ -38,7 +38,7 @@ const CustomNavbar = () => {
   };
 
   return (
-    <Navbar expand="lg">
+    <Navbar expand="lg" sticky='top' bg='white' className='shadow-sm mb-3'>
       <Container>
         <Navbar.Brand as={Link} to="/">
           <Image src="/images/logo.png" alt="logo" width="140" height="auto" />
@@ -57,12 +57,7 @@ const CustomNavbar = () => {
               <>
                 <Dropdown align="end">
                   <Dropdown.Toggle as={CustomToggle} id={`dropdown`}>
-                    <div className="d-flex align-items-center">
-                      <div className="d-flex align-items-center justify-content-center bg-light rounded-circle p-2 me-2">
-                        <IoPerson size={20} className="text-primary" />
-                      </div>
-                      <span className="text-dark">{user.username}</span>
-                    </div>
+                    {user.profilePicture ? <Image src={user.profilePicture} roundedCircle width={32} height={32} /> : <IoPerson size={25} />}
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
                     <Dropdown.Item onClick={() => navigate('/profile')}>Profile</Dropdown.Item>

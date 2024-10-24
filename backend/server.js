@@ -5,6 +5,7 @@ import userRoutes from "./routes/userRoutes.js";
 import timeEntryRoutes from "./routes/timeEntryRoutes.js";
 import amountEntryRoutes from "./routes/amountEntryRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
+import bodyParser from "body-parser";
 import cors from "cors";
 
 dotenv.config();
@@ -13,7 +14,7 @@ const PORT = process.env.PORT || 3000;
 
 const app = express();
 app.use(express.json());
-
+app.use(bodyParser.json());
 connectToDb();
 
 app.use(cors());
