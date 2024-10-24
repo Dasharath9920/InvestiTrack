@@ -28,6 +28,7 @@ export type Statistics = {
 export type TimeEntry = {
    investedIn: string;
    time: number;
+   activityDate: string;
    createdAt?: string;
    _id?: string;
    userId?: string;
@@ -37,6 +38,7 @@ export type TimeEntry = {
 export type AmountEntry = {
    spentOn: string;
    amount: number;
+   expenditureDate: string;
    createdAt?: string;
    _id?: string;
    userId?: string;

@@ -8,7 +8,8 @@ import { useSelector } from 'react-redux';
 
 const initialEntry: TimeEntry = {
   investedIn: Object.values(TIME_CATEGORIES)[0],
-  time: 0
+  time: 0,
+  activityDate: new Date().toISOString().split('T')[0]
 }
 
 const CustomToggle = React.forwardRef(({ children, onClick }: { children: React.ReactNode, onClick: (event: React.MouseEvent<HTMLDivElement>) => void }, ref: React.Ref<HTMLDivElement>) => (
@@ -29,7 +30,7 @@ const Time: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [currentEntry, setCurrentEntry] = useState<TimeEntry>(initialEntry);
   const [editing, setEditing] = useState(false);
-  const [validated, setValidated] = useState(true);
+  const [validated, setValidated] = useState(false);
   const user = useSelector((state: any) => state.user);
 
   const handleClose = () => setShowModal(false);
@@ -52,11 +53,13 @@ const Time: React.FC = () => {
         time: currentEntry.time,
         userId: currentEntry.userId,
         entryId: currentEntry._id,
-        otherCategory: currentEntry.otherCategory
-      } : {
+        otherCategory: currentEntry.otherCategory,
+        activityDate: currentEntry.activityDate
+        } : {
         investedIn: currentEntry.investedIn,
         time: currentEntry.time,
-        otherCategory: currentEntry.otherCategory
+        otherCategory: currentEntry.otherCategory,
+        activityDate: currentEntry.activityDate
       }
       const resp = await fetch('http://localhost:3000/api/entries/time',{
         method: editing ? 'PUT' : 'POST',
@@ -107,6 +110,11 @@ const Time: React.FC = () => {
     } else{
       console.log('error: ',data);
     }
+  };
+
+  const handleDurationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value === '' ? 0 : Number(e.target.value);
+    setCurrentEntry({...currentEntry, time: value});
   };
 
   const fetchTimeData = async () => {
@@ -198,9 +206,14 @@ const Time: React.FC = () => {
                     {formatTime(item.time)}
                   </Card.Text>
                 </div>
-                <Card.Text className="text-muted small mb-0">
-                  Created on: {new Date(item.createdAt || '').toLocaleString()}
-                </Card.Text>
+                <div className="d-flex justify-content-between text-muted small">
+                  <span>
+                    <strong>Spent on:</strong> {new Date(item.activityDate).toLocaleDateString()}
+                  </span>
+                  <span>
+                    <strong>Created:</strong> {new Date(item.createdAt || '').toLocaleString()}
+                  </span>
+                </div>
               </Card.Body>
             </Card>
           </ListGroup.Item>
@@ -245,12 +258,20 @@ const Time: React.FC = () => {
                 type="number"
                 required
                 min={1}
-                value={currentEntry.time}
-                onChange={(e) => setCurrentEntry({...currentEntry, time: Number(e.target.value)})}
+                value={currentEntry.time || ''}
+                onChange={handleDurationChange}
               />
               <Form.Control.Feedback type="invalid">
                 Please enter a valid duration (minimum 1 minute).
               </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Activity date</Form.Label>
+              <Form.Control
+                type="date"
+                value={currentEntry.activityDate}
+                onChange={(e) => setCurrentEntry({...currentEntry, activityDate: e.target.value})}
+              />
             </Form.Group>
           </Form>
         </Modal.Body>

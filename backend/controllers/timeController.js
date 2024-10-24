@@ -3,7 +3,7 @@ import Time from '../models/time.model.js';
 
 export const getAllTimeData = asyncHandler(async (req, res) => {
    try {
-      const timeData = await Time.find({userId: req.user.id});
+      const timeData = await Time.find({userId: req.user.id}).sort({createdAt: -1});
       res.status(200).json({success: true, timeData});
    } catch (error) {
       res.status(500).json({success: false,message: error.message});
@@ -12,12 +12,12 @@ export const getAllTimeData = asyncHandler(async (req, res) => {
 
 export const createTimeData = asyncHandler(async (req, res) => {
    try{
-      const {time, investedIn, otherCategory} = req.body;
-      if(!time || !investedIn){
+      const {time, investedIn, otherCategory, activityDate} = req.body;
+      if(!time || !investedIn || !activityDate){
          throw new Error('All fields are required');
       }
 
-      const newTimeData = new Time({time, investedIn, userId: req.user.id, otherCategory});
+      const newTimeData = new Time({time, investedIn, userId: req.user.id, otherCategory, activityDate});
       await newTimeData.save();
       res.status(201).json({success: true, newTimeData});
    } catch(err) {
@@ -45,8 +45,8 @@ export const deleteTimeData = asyncHandler(async (req, res) => {
 
 export const updateTimeData = asyncHandler(async (req, res) => {
    try {
-      const {entryId, time, investedIn, userId, otherCategory} = req.body;
-      if(!entryId || !time || !investedIn || !userId){
+      const {entryId, time, investedIn, userId, activityDate} = req.body;
+      if(!entryId || !time || !investedIn || !userId || !activityDate){
          throw new Error('All fields are required');
       }
 

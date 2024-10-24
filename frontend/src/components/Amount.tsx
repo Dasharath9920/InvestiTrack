@@ -6,7 +6,8 @@ import { AmountEntry } from '../constants/dataTypes';
 import { useSelector } from 'react-redux';
 const initialEntry: AmountEntry = {
   spentOn: Object.values(AMOUNT_CATEGORIES)[0],
-  amount: 0
+  amount: 0,
+  expenditureDate: new Date().toISOString().split('T')[0]
 }
 
 const CustomToggle = React.forwardRef(({ children, onClick }: { children: React.ReactNode, onClick: (event: React.MouseEvent<HTMLDivElement>) => void }, ref: React.Ref<HTMLDivElement>) => (
@@ -49,11 +50,13 @@ const Amount: React.FC = () => {
         amount: currentEntry.amount,
         userId: currentEntry.userId,
         entryId: currentEntry._id,
-        otherCategory: currentEntry.otherCategory
+        otherCategory: currentEntry.otherCategory,
+        expenditureDate: currentEntry.expenditureDate
       } : {
         spentOn: currentEntry.spentOn,
         amount: currentEntry.amount,
-        otherCategory: currentEntry.otherCategory
+        otherCategory: currentEntry.otherCategory,
+        expenditureDate: currentEntry.expenditureDate
       }
       const resp = await fetch('http://localhost:3000/api/entries/amount',{
         method: editing ? 'PUT' : 'POST',
@@ -81,6 +84,11 @@ const Amount: React.FC = () => {
     handleShow();
     setCurrentEntry(item);
     setEditing(true);
+  }
+
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value === '' ? 0 : Number(e.target.value);
+    setCurrentEntry({...currentEntry, amount: value});
   }
 
   const handleDelete = async (item: any) => {
@@ -191,9 +199,14 @@ const Amount: React.FC = () => {
                   </Dropdown>
                 </div>
                 <Card.Text className="text-success fs-4 mb-2">₹{item.amount.toFixed(2)}</Card.Text>
-                <Card.Text className="text-muted small mb-0">
-                  Created on: {new Date(item.createdAt || '').toLocaleString()}
-                </Card.Text>
+                <div className="d-flex justify-content-between text-muted small">
+                  <span>
+                    <strong>Spent on:</strong> {new Date(item.expenditureDate).toLocaleDateString()}
+                  </span>
+                  <span>
+                    <strong>Created:</strong> {new Date(item.createdAt || '').toLocaleString()}
+                  </span>
+                </div>
               </Card.Body>
             </Card>
           </ListGroup.Item>
@@ -238,12 +251,20 @@ const Amount: React.FC = () => {
                 type="number"
                 required
                 min={1}
-                value={currentEntry.amount}
-                onChange={(e) => setCurrentEntry({...currentEntry, amount: Number(e.target.value)})}
+                value={currentEntry.amount || ''}
+                onChange={handleAmountChange}
               />
               <Form.Control.Feedback type="invalid">
                 Please enter a valid amount (minimum 1).
               </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Expenditure date</Form.Label>
+              <Form.Control
+                type="date"
+                value={currentEntry.expenditureDate}
+                onChange={(e) => setCurrentEntry({...currentEntry, expenditureDate: e.target.value})}
+              />
             </Form.Group>
           </Form>
         </Modal.Body>

@@ -3,7 +3,7 @@ import Amount from '../models/money.model.js';
 
 export const getAllMoneyData = asyncHandler(async (req, res) => {
    try{
-      const amountData = await Amount.find({userId: req.user.id});
+      const amountData = await Amount.find({userId: req.user.id}).sort({createdAt: -1});
       res.status(200).json({success: true, amountData});
    } catch(err) {
       res.status(500).json({success: false, message: err.message});
@@ -12,12 +12,12 @@ export const getAllMoneyData = asyncHandler(async (req, res) => {
 
 export const createMoneyData = asyncHandler(async (req, res) => {
    try{
-      const {amount, spentOn, otherCategory} = req.body;
+      const {amount, spentOn, otherCategory, expenditureDate} = req.body;
       if(!amount || !spentOn){
          throw new Error('All fields are required');
       }
 
-      const newMoneyData = new Amount({amount, spentOn, userId: req.user.id, otherCategory});
+      const newMoneyData = new Amount({amount, spentOn, userId: req.user.id, otherCategory, expenditureDate});
       await newMoneyData.save();
       res.status(201).json({success: true, newMoneyData});
    } catch(err) {
@@ -45,8 +45,8 @@ export const deleteMoneyData = asyncHandler(async (req, res) => {
 
 export const updateMoneyData = asyncHandler(async (req, res) => {
    try{
-      const {entryId, amount, spentOn, userId} = req.body;
-      if(!entryId || !amount || !spentOn || !userId){
+      const {entryId, amount, spentOn, userId, expenditureDate} = req.body;
+      if(!entryId || !amount || !spentOn || !userId || !expenditureDate){
          throw new Error('All fields are required');
       }
 

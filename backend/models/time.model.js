@@ -16,6 +16,10 @@ const timeSchema = new mongoose.Schema({
    },
    otherCategory: {
       type: String
+   },
+   activityDate: {
+      type: String,
+      required: [true, 'Activity date is required']
    }
 }, {timestamps: true});
 

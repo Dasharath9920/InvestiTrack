@@ -16,6 +16,10 @@ const amountSchema = new mongoose.Schema({
    },
    otherCategory: {
       type: String
+   },
+   expenditureDate: {
+      type: String,
+      required: [true, 'Expenditure date is required']
    }
 }, {timestamps: true});
 
