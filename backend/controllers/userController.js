@@ -103,7 +103,8 @@ export const getCurrentUser = asyncHandler(async(req, res) => {
          userId: user._id,
          username: user.username,
          email: user.email,
-         profilePicture: user.profilePicture?.data ? `data:${user.profilePicture.contentType};base64,${user.profilePicture.data.toString('base64')}` : null
+         profilePicture: user.profilePicture?.data ? `data:${user.profilePicture.contentType};base64,${user.profilePicture.data.toString('base64')}` : null,
+         accountCreatedOn: user.createdAt
       }
       res.status(200).json({success: true, userData});
    } catch(err) {

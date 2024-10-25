@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Spinner, ProgressBar } from 'react-bootstrap';
-import { FaRupeeSign, FaClock, FaPlus, FaChartLine, FaChartPie } from 'react-icons/fa';
+import { Container, Row, Col, Card, Spinner, ProgressBar } from 'react-bootstrap';
+import { FaRupeeSign, FaClock, FaChartLine, FaChartPie } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { ACCESS_TOKEN } from '../constants/constants';
 import { formatTime } from '../helper';
@@ -121,7 +121,8 @@ const Home = () => {
                           <h6 className="mb-0 fs-6">{entry.spentOn} {entry.otherCategory && `(${entry.otherCategory})`}</h6>
                           <small className="text-muted" style={{ fontSize: '0.8rem' }}>
                             <em>{new Date(entry.expenditureDate!).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</em>
-                          </small>                        </div>
+                          </small>
+                        </div>
                         <div className="text-end">
                           <span className="badge bg-success rounded-pill">₹{entry.amount.toFixed(2)}</span>
                         </div>

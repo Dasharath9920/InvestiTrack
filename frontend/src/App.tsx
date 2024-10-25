@@ -26,6 +26,7 @@ function App() {
       localStorage.removeItem(ACCESS_TOKEN);
       navigate('/login');
     }
+    
     if(!user.isLoggedIn && authToken){
       fetchAndUpdateUserDetails(dispatch);
     }

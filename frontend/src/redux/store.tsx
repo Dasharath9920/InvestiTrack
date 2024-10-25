@@ -9,7 +9,8 @@ const initialState = {
       username: '',
       email: '',
       id: '',
-      profilePicture: ''
+      profilePicture: '',
+      accountCreatedOn: ''
    },
    settings: {
       theme: THEMES.LIGHT

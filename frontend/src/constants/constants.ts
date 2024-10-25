@@ -49,3 +49,34 @@ export const AMOUNT_CATEGORIES: { [key: string]: string } = {
    DEBT: 'Debt',
    OTHER: 'Other'
 }
+
+export const PRODUCTIVE_TIME_CATEGORIES: { [key: string]: string } = {
+   WORK: 'Work',
+   STUDY: 'Study',
+   MEDITATION: 'Meditation',
+   PERSONAL_DEVELOPMENT: 'Personal Development',
+   SPORT: 'Sport'
+}
+
+export const TIME_PERIODS = [
+   {
+      label: '5 years',
+      value: 5
+   },
+   {
+      label: '12 months',
+      value: 12
+   },
+   {
+      label: '6 months',
+      value: 6
+   },
+   {
+      label: '30 days',
+      value: 30
+   },
+   {
+      label: '7 days',
+      value: 7
+   }
+]

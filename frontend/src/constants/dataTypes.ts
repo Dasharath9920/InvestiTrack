@@ -3,6 +3,7 @@ export type User = {
    email: string;
    password: string;
    profilePicture?: string;
+   accountCreatedOn?: string;
 }
 
 export type RegisterResponse = {

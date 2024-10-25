@@ -19,6 +19,7 @@ import actionTypes from '../constants/actionTypes';
         username: data.userData.username,
         email: data.userData.email,
         id: data.userData.userId,
+        accountCreatedOn: data.userData.accountCreatedOn,
         profilePicture: data.userData.profilePicture
       }
     }); 

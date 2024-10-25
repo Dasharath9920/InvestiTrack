@@ -126,7 +126,7 @@ const Amount: React.FC = () => {
     });
     const data = await resp.json();
     if(data.success){
-      setEntries(data.amountData);
+      setEntries(data.amountData.map((amountData: any) => ({...amountData, expenditureDate: amountData.expenditureDate.split('T')[0]})));
     }
   };
 
@@ -134,7 +134,7 @@ const Amount: React.FC = () => {
     if(user.isLoggedIn){
       fetchAmountData();
     }
-  }, []);
+  }, [user.isLoggedIn]);
 
   const totalAmount: number = entries.reduce((sum, entry) => sum + entry.amount, 0);
   const categories: string[] = Object.values(AMOUNT_CATEGORIES);

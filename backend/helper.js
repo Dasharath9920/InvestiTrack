@@ -14,9 +14,9 @@ export const getAmountSpendsByDays = async (userId, numberOfDays) => {
       if(data.length){
          data = data.map(item => ({spentOn: item._id, totalAmount: item.totalAmount}));
       }
-      return {success: true, data};
+      return data;
    } catch (err) {
-      return {success: false, message: err.message};
+      return [];
    }
 }
 
@@ -32,9 +32,9 @@ export const avgAmountSpendsByTime = async (userId, numberOfDays) => {
       if(data.length){
          data = data.map(item => ({spentOn: item._id, averageAmount: item.averageAmount}));
       }
-      return {success: true, data};
+      return data;
    } catch (err) {
-      return {success: false, message: err.message};
+      return [];
    }
 }
 
@@ -52,9 +52,9 @@ export const getTimeSpendsByTimeDays = async (userId, numberOfDays) => {
          data = data.map(item => ({investedIn: item._id, totalTime: item.totalTime}));
       }
 
-      return {success: true, data};
+      return data;
    } catch (err) {
-      return {success: false, message: err.message};
+      return [];
    }
 }
 
@@ -72,8 +72,8 @@ export const avgTimeSpendsByTimeDays = async (userId, numberOfDays) => {
          data = data.map(item => ({investedIn: item._id, averageTime: item.averageTime}));
       }
 
-      return {success: true, data};
+      return data;
    } catch (err) {
-      return {success: false, message: err.message};
+      return [];
    }
 }

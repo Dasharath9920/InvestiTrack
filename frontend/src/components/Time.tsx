@@ -128,7 +128,7 @@ const Time: React.FC = () => {
     });
     const data = await resp.json();
     if(data.success){
-      setEntries(data.timeData);
+      setEntries(data.timeData.map((timeData: any) => ({...timeData, activityDate: timeData.activityDate.split('T')[0]})));
     }
   };
 
@@ -136,7 +136,7 @@ const Time: React.FC = () => {
     if(user.isLoggedIn){
       fetchTimeData();
     }
-  }, []);
+  }, [user.isLoggedIn]);
 
   const categories: string[] = Object.values(TIME_CATEGORIES);
   const totalTime = entries.reduce((sum: number, entry: TimeEntry) => sum + Number(entry.time), 0);
