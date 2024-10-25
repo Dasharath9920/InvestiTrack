@@ -18,7 +18,7 @@ const timeSchema = new mongoose.Schema({
       type: String
    },
    activityDate: {
-      type: String,
+      type: Date,
       required: [true, 'Activity date is required']
    }
 }, {timestamps: true});

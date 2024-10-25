@@ -18,7 +18,7 @@ const amountSchema = new mongoose.Schema({
       type: String
    },
    expenditureDate: {
-      type: String,
+      type: Date,
       required: [true, 'Expenditure date is required']
    }
 }, {timestamps: true});

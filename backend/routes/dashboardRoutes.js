@@ -12,12 +12,12 @@ dashboardRoutes.get('/', async (req, res) => {
   try {
     // Fetch 5 most recent time entries
     let recentTimeEntries = await Time.find({ userId: req.user.id })
-      .sort({ createdAt: -1 })
+      .sort({ activityDate: -1 })
       .limit(5);
 
     // Fetch 5 most recent amount entries
     let recentAmountEntries = await Amount.find({ userId: req.user.id })
-      .sort({ createdAt: -1 })
+      .sort({ expenditureDate: -1 })
       .limit(5);
 
     // Calculate total time and amount

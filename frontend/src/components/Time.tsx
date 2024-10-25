@@ -177,11 +177,11 @@ const Time: React.FC = () => {
        </Col>
      </Row>
 
-     {/* <div className="text-center mb-5">
+     <div className="text-center mb-5">
        <Button variant="primary" onClick={handleShow} className="px-4 py-2 rounded-pill shadow-sm">
          <FaPlus className="me-2" /> Add New Entry
        </Button>
-     </div>  */}
+     </div> 
 
      <Card className="shadow-sm">
         <Card.Header className="bg-success text-white">

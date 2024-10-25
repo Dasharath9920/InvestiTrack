@@ -129,17 +129,3 @@ export const uploadProfilePicture = asyncHandler(async(req, res) => {
       res.status(500).json({success: false, message: err.message});
    }
 });
-
-export const getProfilePicture = asyncHandler(async(req, res) => {
-   try{
-      const user = await User.findById(req.user.id);
-      if(!user || !user.profilePicture){
-         throw new Error('Profile picture not found');
-      }
-
-      res.set('Content-Type', user.profilePicture.contentType);
-      res.send(user.profilePicture.data);
-   } catch (err) {
-      res.status(500).json({success: false, message: err.message});
-   }
-});
