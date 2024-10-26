@@ -38,7 +38,7 @@ export const avgAmountSpendsByTime = async (userId, numberOfDays) => {
    }
 }
 
-export const getTimeSpendsByTimeDays = async (userId, numberOfDays) => {
+export const getTimeSpendsByDays = async (userId, numberOfDays) => {
    try {
       const days = new Date();
       days.setDate(days.getDate() - numberOfDays);
@@ -58,7 +58,7 @@ export const getTimeSpendsByTimeDays = async (userId, numberOfDays) => {
    }
 }
 
-export const avgTimeSpendsByTimeDays = async (userId, numberOfDays) => {
+export const avgTimeSpendsByDays = async (userId, numberOfDays) => {
    try {
       const days = new Date();
       days.setDate(days.getDate() - numberOfDays);
@@ -74,6 +74,93 @@ export const avgTimeSpendsByTimeDays = async (userId, numberOfDays) => {
 
       return data;
    } catch (err) {
+      return [];
+   }
+}
+
+export const getBeforeMonthAmountData = async (userId) => {
+   try{
+      const currentMonthDays = new Date();
+      const beforeMonthDays = new Date();
+      currentMonthDays.setDate(currentMonthDays.getDate() - 30);
+      beforeMonthDays.setDate(beforeMonthDays.getDate() - 60);
+
+      let data = await Amount.aggregate([
+         { $match: { userId: new mongoose.Types.ObjectId(userId), expenditureDate: { $gte: beforeMonthDays, $lte: currentMonthDays}}},
+         { $group: {_id: '$spentOn', totalAmount: { $sum: '$amount'}}}
+      ]);
+
+      if(data.length){
+         data = data.map(item => ({spentOn: item._id, totalAmount: item.totalAmount}));
+      }
+
+      return data;
+   } catch(err){
+      return [];
+   }
+}
+
+export const getBeforeMonthAvgAmountData = async (userId) => {
+   try{
+      const currentMonthDays = new Date();
+      const beforeMonthDays = new Date();
+      currentMonthDays.setDate(currentMonthDays.getDate() - 30);
+      beforeMonthDays.setDate(beforeMonthDays.getDate() - 60);
+
+      let data = await Amount.aggregate([
+         { $match: { userId: new mongoose.Types.ObjectId(userId), expenditureDate: { $gte: beforeMonthDays, $lte: currentMonthDays}}},
+         { $group: {_id: '$spentOn', avgerageAmount: { $avg: '$amount'}}}
+      ]);
+
+      if(data.length){
+         data = data.map(item => ({spentOn: item._id, totalAmount: item.totalAmount}));
+      }
+
+      return data;
+   } catch(err){
+      return [];
+   }
+}
+
+export const getBeforeWeekTimeData = async (userId) => {
+   try{
+      const currentWeekDays = new Date();
+      const beforeWeekDays = new Date();
+      currentWeekDays.setDate(currentWeekDays.getDate() - 7);
+      beforeWeekDays.setDate(beforeWeekDays.getDate() - 14);
+
+      let data = await Time.aggregate([
+         { $match: { userId: new mongoose.Types.ObjectId(userId), activityDate: { $gte: beforeWeekDays, $lte: currentWeekDays}}},
+         { $group: {_id: '$investedIn', totalTime: { $sum: '$time'}}}
+      ]);
+
+      if(data.length){
+         data = data.map(item => ({investedIn: item._id, totalTime: item.totalTime}));
+      }
+
+      return data;
+   } catch(err){
+      return [];
+   }
+}
+
+export const getBeforeWeekAvgTimeData = async (userId) => {
+   try{
+      const currentWeekDays = new Date();
+      const beforeWeekDays = new Date();
+      currentWeekDays.setDate(currentWeekDays.getDate() - 7);
+      beforeWeekDays.setDate(beforeWeekDays.getDate() - 14);
+
+      let data = await Time.aggregate([
+         { $match: { userId: new mongoose.Types.ObjectId(userId), activityDate: { $gte: beforeWeekDays, $lte: currentWeekDays}}},
+      ]);
+
+      if(data.length){
+         data = data.map(item => ({investedIn: item._id, averageTime: item.averageTime}));
+      }
+
+      return data;
+   } catch(err){
       return [];
    }
 }
