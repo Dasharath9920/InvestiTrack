@@ -12,7 +12,7 @@ const Home = () => {
   const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
   const fetchedRef = useRef(false);
   const fetchData = async () => {
-    const resp = await fetch('http://localhost:3000/api/entries/dashboard', {
+    const resp = await fetch('/api/entries/dashboard', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

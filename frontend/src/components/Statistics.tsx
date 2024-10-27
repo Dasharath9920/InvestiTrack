@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Card, Col, Container, Dropdown, DropdownButton, Spinner, Navbar, NavDropdown, ProgressBar, Row, Stack, ButtonGroup, Button } from 'react-bootstrap';
+import { useState, useEffect, useRef } from 'react';
+import { Card, Col, Container, Spinner, NavDropdown, Row, Stack } from 'react-bootstrap';
 import { getStatisticalData, getTimeDescription } from '../helper';
 import { FaFilePdf } from 'react-icons/fa';
 import { getStatistics, getTimeStatistics, getAmountStatistics, getSafeLimits, getChartData } from '../services/statisticService';
@@ -65,9 +65,9 @@ const Statistics = () => {
   const getVariant = (value: number, category: string) => {
     value *= 100;
     if(SAFE_SPENDING_CATEGORIES.includes(category) || PRODUCTIVE_TIME_CATEGORIES.includes(category)){
-      return value > 90 ? 'success' : value > 75 ? 'warning' : 'danger';
+      return value >= 100 ? 'success' : value > 90 ? 'warning' : 'danger';
     }
-    return value > 90 ? 'danger' : value > 75 ? 'warning' : 'success';
+    return value >= 100 ? 'danger' : value > 90 ? 'warning' : 'success';
   };
 
   const fetchInitialData = async () => {
@@ -154,7 +154,7 @@ const Statistics = () => {
 
         <Row className='mb-4' style={{minHeight: '300px'}}>
           <Col sm={8}>
-            <Card className='h-100 p-1'>
+            <Card className='h-100 p-2'>
               <Card.Body>
                 <Row className="align-items-center mb-4">
                   <Col xs={2}>
@@ -189,7 +189,7 @@ const Statistics = () => {
                   </Col>
                 </Row>
                 <Row className="overflow-auto" style={{ height: '250px' }}>
-                  <Col>
+                  <Col className='p-0'>
                     <CurvedLineChart chartData={chartData?.[chartCategory]?.[chartTimePeriod.id]} category={chartCategory} timePeriod={chartTimePeriod} />
                   </Col>
                 </Row>
@@ -284,7 +284,7 @@ const Statistics = () => {
                           <span className="custom-progress-bar-label">{getTimeDescription(Math.round(data.totalTime/Math.min(statisticalData.daysSinceAccountCreation, timePeriod.value)))} / day</span>
                         </Card.Text>
                         <div className="custom-progress-bar">
-                          <div className={`custom-progress-bar-fill ${getVariant(data.totalTime / safeLimits?.time?.[timePeriod.id]?.[data.investedIn], data.investedIn)}`}
+                          <div className={`custom-progress-bar-fill ${getVariant(data.totalTime / Math.min(safeLimits?.time?.[timePeriod.id]?.[data.investedIn], data.investedIn), statisticalData.daysSinceAccountCreation)}`}
                             style={{
                               width: `${safeLimits?.time?.[timePeriod.id]?.[data.investedIn] ? Math.min(100, data.totalTime / safeLimits?.time?.[timePeriod.id]?.[data.investedIn] * 100) : 0}%`
                             }}

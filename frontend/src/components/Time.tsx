@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, Modal, Form, ListGroup, Card, Container, Row, Col, Dropdown } from 'react-bootstrap';
-import { FaPlus, FaClock, FaList, FaChartBar, FaEllipsisV, FaEdit, FaTrash, FaHourglassHalf, FaChartLine } from 'react-icons/fa';
+import { FaPlus, FaClock, FaEllipsisV, FaEdit, FaTrash, FaHourglassHalf, FaChartLine } from 'react-icons/fa';
 import { TIME_CATEGORIES, ACCESS_TOKEN } from '../constants/constants';
-import { formatTime, getTimeDescription } from '../helper';
+import { formatTime } from '../helper';
 import { TimeEntry } from '../constants/dataTypes';
 import { useSelector } from 'react-redux';
 
@@ -63,7 +63,7 @@ const Time: React.FC = () => {
         otherCategory: currentEntry.otherCategory,
         activityDate: currentEntry.activityDate
       }
-      const resp = await fetch('http://localhost:3000/api/entries/time',{
+      const resp = await fetch('/api/entries/time',{
         method: editing ? 'PUT' : 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -97,7 +97,7 @@ const Time: React.FC = () => {
       return;
     }
     const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
-    const resp = await fetch('http://localhost:3000/api/entries/time', {
+    const resp = await fetch('/api/entries/time', {
       method: "DELETE",
       headers: {
         'Content-Type': 'application/json',
@@ -121,7 +121,7 @@ const Time: React.FC = () => {
 
   const fetchTimeData = async () => {
     const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
-    const resp = await fetch('http://localhost:3000/api/entries/time',{
+    const resp = await fetch('/api/entries/time',{
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -142,56 +142,34 @@ const Time: React.FC = () => {
   }, [user.isLoggedIn]);
 
   const categories: string[] = Object.values(TIME_CATEGORIES);
-  const totalTime = entries.reduce((sum: number, entry: TimeEntry) => sum + Number(entry.time), 0);
 
   return (
    <Container className="py-3">
-     <h1 className="mb-5 text-center display-6 fw-bold text-primary">Time Tracker</h1>
-     
-     <Row className="mb-5 justify-content-center">
-       <Col md={4} className="mb-4 mb-md-0">
-         <Card className="h-100 shadow border-0 bg-light">
-           <Card.Body className="d-flex flex-column justify-content-center align-items-center">
-             <FaClock className="text-primary mb-3" size={40} />
-             <Card.Title className="fw-bold">Total Time Spent</Card.Title>
-             <Card.Text as="h3" className="mb-0 text-primary">{formatTime(totalTime)}</Card.Text>
-           </Card.Body>
-         </Card>
-       </Col>
-       <Col md={4} className="mb-4 mb-md-0">
-         <Card className="h-100 shadow border-0 bg-light">
-           <Card.Body className="d-flex flex-column justify-content-center align-items-center">
-             <FaList className="text-primary mb-3" size={40} />
-             <Card.Title className="fw-bold">Number of Activities</Card.Title>
-             <Card.Text as="h3" className="mb-0 text-primary">{entries.length}</Card.Text>
-           </Card.Body>
-         </Card>
-       </Col>
-       <Col md={4}>
-         <Card className="h-100 shadow border-0 bg-light">
-           <Card.Body className="d-flex flex-column justify-content-center align-items-center">
-             <FaChartBar className="text-primary mb-3" size={40} />
-             <Card.Title className="fw-bold">Average Time per Activity</Card.Title>
-             <Card.Text as="h3" className="mb-0 text-primary">
-               {entries.length ? formatTime(totalTime / entries.length) : 0}
-             </Card.Text>
-           </Card.Body>
-         </Card>
-       </Col>
-     </Row>
-
-     <div className="text-center mb-5">
-       <Button variant="primary" onClick={handleShow} className="px-4 py-2 rounded-pill shadow-sm">
-         <FaPlus className="me-2" /> Add New Entry
-       </Button>
-     </div> 
+     <Card className="shadow-sm border-1 bg-gradient mb-4">
+       <Card.Body className="py-3 px-5">
+         <Row className="align-items-center">
+           <Col xs={12} md={8} className="text-center text-md-start">
+             <h1 className="display-6 fw-bold mb-3 text-primary align-items-center">
+               <FaClock className="me-3" size={34}/>
+                Time Tracker
+             </h1>
+             <p className="lead mb-0 text-muted">Efficiently manage and track your time investments</p>
+           </Col>
+           <Col xs={12} md={4} className="text-center mt-4 mt-md-0">
+            <Button variant="primary" onClick={handleShow} className="px-4 py-2 rounded-pill shadow-sm">
+              <FaPlus className="me-2" /> Add New Entry
+            </Button>
+           </Col>
+         </Row>
+       </Card.Body>
+     </Card>
 
      <Card className="shadow-sm">
         <Card.Header className="bg-success text-white">
           <FaChartLine className="me-2" /> Recent Amount Entries
         </Card.Header>
         <Card.Body>
-          <ListGroup className="mx-auto" style={{ maxWidth: '100%', height: '400px', overflowY: 'auto' }}>
+          <ListGroup className="mx-auto" style={{ maxWidth: '100%', height: '450px', overflowY: 'auto' }}>
             {entries.map((item, index) => (
               <ListGroup.Item key={index} className="mb-2 border-0">
                 <Card className="shadow-sm">

@@ -20,7 +20,7 @@ const Profile = () => {
     formData.append('profilePicture', file);
 
     try{
-      const response: any = await fetch('http://localhost:3000/api/users/upload-profile-picture', {
+      const response: any = await fetch('/api/users/upload-profile-picture', {
         method: 'POST',
         body: formData,
         headers: {

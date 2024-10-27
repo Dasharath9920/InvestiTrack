@@ -50,7 +50,7 @@ const CurvedLineChart = ({chartData, category, timePeriod}: {chartData: any, cat
         display: false
       },
       title: {
-        display: false,
+        display: true,
         text: `${category.charAt(0).toUpperCase() + category.slice(1)} Spent in ${timePeriod.label}`,
       },
     },

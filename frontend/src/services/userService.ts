@@ -4,7 +4,7 @@ import actionTypes from '../constants/actionTypes';
 
  export const fetchAndUpdateUserDetails = async (dispatch: Dispatch) => {
    const authToken = localStorage.getItem(ACCESS_TOKEN)? JSON.parse(localStorage.getItem(ACCESS_TOKEN)!): '';
-   const userDetails = await fetch(`http://localhost:3000/api/users/current`, {
+   const userDetails = await fetch(`/api/users/current`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

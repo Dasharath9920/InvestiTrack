@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, Modal, Form, ListGroup, Card, Container, Row, Col, Dropdown } from 'react-bootstrap';
-import { FaPlus, FaRupeeSign, FaList, FaChartBar, FaEdit, FaTrash, FaEllipsisV, FaChartLine } from 'react-icons/fa';
+import { FaPlus, FaRupeeSign, FaEdit, FaTrash, FaEllipsisV, FaChartLine } from 'react-icons/fa';
 import { AMOUNT_CATEGORIES, ACCESS_TOKEN } from '../constants/constants';
 import { AmountEntry } from '../constants/dataTypes';
 import { useSelector } from 'react-redux';
@@ -61,7 +61,7 @@ const Amount: React.FC = () => {
         otherCategory: currentEntry.otherCategory,
         expenditureDate: currentEntry.expenditureDate
       }
-      const resp = await fetch('http://localhost:3000/api/entries/amount',{
+      const resp = await fetch('/api/entries/amount',{
         method: editing ? 'PUT' : 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ const Amount: React.FC = () => {
     }
 
     const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
-    const resp = await fetch('http://localhost:3000/api/entries/amount',{
+    const resp = await fetch('/api/entries/amount',{
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -121,7 +121,7 @@ const Amount: React.FC = () => {
 
   const fetchAmountData = async () => {
     const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
-    const resp = await fetch('http://localhost:3000/api/entries/amount',{
+    const resp = await fetch('/api/entries/amount',{
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${authToken}`
@@ -140,57 +140,35 @@ const Amount: React.FC = () => {
     }
   }, [user.isLoggedIn]);
 
-  const totalAmount: number = entries.reduce((sum, entry) => sum + entry.amount, 0);
   const categories: string[] = Object.values(AMOUNT_CATEGORIES);
 
   return (
     <Container className="py-3">
-      <h1 className="mb-5 text-center display-6 fw-bold text-success">Expense Tracker</h1>
-      
-      <Row className="mb-5 justify-content-center">
-        <Col md={4} className="mb-4 mb-md-0">
-          <Card className="h-100 shadow border-0 bg-light">
-            <Card.Body className="d-flex flex-column justify-content-center align-items-center">
-              <FaRupeeSign className="text-success mb-3" size={40} />
-              <Card.Title className="fw-bold">Total Amount Spent</Card.Title>
-              <Card.Text as="h3" className="mb-0 text-success">₹{totalAmount.toFixed(2)}</Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={4} className="mb-4 mb-md-0">
-          <Card className="h-100 shadow border-0 bg-light">
-            <Card.Body className="d-flex flex-column justify-content-center align-items-center">
-              <FaList className="text-success mb-3" size={40} />
-              <Card.Title className="fw-bold">Number of Expenses</Card.Title>
-              <Card.Text as="h3" className="mb-0 text-success">{entries.length}</Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={4}>
-          <Card className="h-100 shadow border-0 bg-light">
-            <Card.Body className="d-flex flex-column justify-content-center align-items-center">
-              <FaChartBar className="text-success mb-3" size={40} />
-              <Card.Title className="fw-bold">Average Expense</Card.Title>
-              <Card.Text as="h3" className="mb-0 text-success">
-              ₹{entries.length ? (totalAmount / entries.length).toFixed(2) : '0.00'}
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-
-      <div className="text-center mb-5">
-        <Button variant="success" onClick={handleShow} className="px-4 py-2 rounded-pill shadow-sm">
-          <FaPlus className="me-2" /> Add New Expense
-        </Button>
-      </div>
+      <Card className="shadow-sm border-1 bg-gradient mb-4">
+       <Card.Body className="py-3 px-5">
+         <Row className="align-items-center">
+           <Col xs={12} md={8} className="text-center text-md-start">
+             <h1 className="display-6 fw-bold mb-3 text-success align-items-center">
+               <FaRupeeSign className="me-3" size={34}/>
+                Expense Tracker
+             </h1>
+             <p className="lead mb-0 text-muted">Efficiently manage and track your financial expenses</p>
+           </Col>
+           <Col xs={12} md={4} className="text-center mt-4 mt-md-0">
+            <Button variant="success" onClick={handleShow} className="px-4 py-2 rounded-pill shadow-sm">
+              <FaPlus className="me-2" /> Add New Expense
+            </Button>
+           </Col>
+         </Row>
+       </Card.Body>
+     </Card>
 
       <Card className="shadow-sm">
         <Card.Header className="bg-success text-white">
           <FaChartLine className="me-2" /> Recent Amount Entries
         </Card.Header>
         <Card.Body>
-          <ListGroup className="mx-auto" style={{ maxWidth: '100%', height: '400px', overflowY: 'auto' }}>
+          <ListGroup className="mx-auto" style={{ maxWidth: '100%', height: '450px', overflowY: 'auto' }}>
             {entries.map((item, index) => (
               <ListGroup.Item key={index} className="mb-2 border-0">
                 <Card className="shadow-sm">

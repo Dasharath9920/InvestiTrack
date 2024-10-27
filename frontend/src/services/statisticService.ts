@@ -3,7 +3,7 @@ import { ACCESS_TOKEN, AMOUNT_CATEGORIES, SAFE_LIMITS_WEEKLY, TIME_CATEGORIES, T
 export const getStatistics = async () => {
    try{
       const token = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
-      const response = await fetch('http://localhost:3000/api/statistics',{
+      const response = await fetch('/api/statistics',{
          method: 'GET',
          headers: {
             'Content-Type': 'application/json',
@@ -78,7 +78,7 @@ export const addMissingCategoriesToAmountData = (amountData: any) => {
 export const getTimeStatistics = async () => {
    try {
       const token = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
-   const response = await fetch('http://localhost:3000/api/statistics/time', {
+   const response = await fetch('/api/statistics/time', {
       method: 'GET',
       headers: {
          'Content-Type': 'application/json',
@@ -105,7 +105,7 @@ export const getTimeStatistics = async () => {
 export const getAmountStatistics = async () => {
    try {
       const token = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
-      const response = await fetch('http://localhost:3000/api/statistics/amount', {
+      const response = await fetch('/api/statistics/amount', {
          method: 'GET',
          headers: {
             'Content-Type': 'application/json',
@@ -152,7 +152,7 @@ export const getSafeLimits = () => {
 export const getChartData = async () => {
    try {
       const token = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
-      const response = await fetch('http://localhost:3000/api/statistics/chart', {
+      const response = await fetch('/api/statistics/chart', {
          method: 'GET',
          headers: {
             'Content-Type': 'application/json',
