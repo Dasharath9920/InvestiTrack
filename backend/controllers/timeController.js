@@ -16,10 +16,19 @@ export const createTimeData = asyncHandler(async (req, res) => {
       if(!time || !investedIn || !activityDate){
          throw new Error('All fields are required');
       }
-
-      const newTimeData = new Time({time, investedIn, userId: req.user.id, otherCategory, activityDate});
-      await newTimeData.save();
-      res.status(201).json({success: true, newTimeData});
+      console.log('activityDate: ',activityDate)
+      let data = await Time.find({userId: req.user.id, activityDate: activityDate, investedIn: investedIn});
+      console.log('data: ',data)
+      if(data.length > 0){
+         data[0].time = data[0].time + time; 
+         await data[0].save();
+      }
+      else{
+         data = new Time({time, investedIn, userId: req.user.id, otherCategory, activityDate});
+         await data.save();
+      }
+      
+      res.status(201).json({success: true, newTimeData: data});
    } catch(err) {
       res.status(500).json({success: false, message: err.message});
    }

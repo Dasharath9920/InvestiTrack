@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Tabs, Tab, Form, Button, Card } from 'react-bootstrap';
+import { Container, Tabs, Tab, Form, Button, Card, Spinner } from 'react-bootstrap';
 import { RegisterResponse, LoginResponse } from '../constants/dataTypes';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +10,7 @@ const Login = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [username, setUsername] = useState<string>('');
+  const [loader, setLoader] = useState<boolean>(false);
   const [tab, setTab] = useState<string>('login');
 
   const navigate = useNavigate();
@@ -18,11 +19,13 @@ const Login = () => {
 
   const loginUser = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if(!email || !password){
       alert('Please fill all the fields');
       return;
     }
 
+    setLoader(true);
     const response = await fetch('http://localhost:3000/api/users/login', {
       method: "POST",
       headers: {
@@ -32,6 +35,7 @@ const Login = () => {
     });
 
     const data: LoginResponse = await response.json();
+    setLoader(false);
     if(data.success){
       localStorage.setItem(ACCESS_TOKEN, JSON.stringify(data.accessToken));
       localStorage.setItem(EMAIL, JSON.stringify(email));
@@ -51,13 +55,14 @@ const Login = () => {
       return;
     }
 
+    setLoader(true);
     const response = await fetch('http://localhost:3000/api/users/register', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({username, email, password})
     });
     const data: RegisterResponse = await response.json();
-
+    setLoader(false);
     if(data.success){
       alert('User registered successfully');
       setTab('login');
@@ -83,8 +88,9 @@ const Login = () => {
                   <Form.Label>Password</Form.Label>
                   <Form.Control type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                 </Form.Group>
-                <Button variant="primary" type="submit" className="w-100 mt-2">
+                <Button variant="primary" type="submit" className="w-100 mt-2" disabled={loader}>
                   Login
+                  {loader && <Spinner animation="border" size="sm" className='ms-2' />}
                 </Button>
               </Form>
             </Tab>
@@ -103,14 +109,15 @@ const Login = () => {
                   <Form.Control type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                 </Form.Group>
                 <p className='text-center mt-3 small'>Already registerd? <a href="#" onClick={(e) => {e.preventDefault(); setTab('login')}}>Login here</a></p>
-                <Button variant="primary" type="submit" className="w-100 mt-2">
+                <Button variant="primary" type="submit" className="w-100 mt-2" disabled={loader}>
                   Register
+                  {loader && <Spinner animation="border" size="sm" className='ms-2' />}
                 </Button>
               </Form>
             </Tab>
           </Tabs>
-        </Card.Body>
-      </Card>
+          </Card.Body>
+        </Card>
     </Container>
   );
 }

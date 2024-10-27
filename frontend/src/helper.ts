@@ -46,5 +46,5 @@ export const formatTime = (minutes: number): string => {
 
   const productiveTimeDifferencePercentage = beforeWeekProductiveTime ? (productiveTime - beforeWeekProductiveTime)/beforeWeekProductiveTime*100 : 100;
 
-  return {lastMonthAmount, maxAvgAmount, productiveTime, entertainmentTime, amountDifferencePercentage, averageAmountDifferencePercentage, entertainmentTimeDifferencePercentage, productiveTimeDifferencePercentage};
+  return {lastMonthAmount, maxAvgAmount, productiveTime, entertainmentTime, amountDifferencePercentage, averageAmountDifferencePercentage, entertainmentTimeDifferencePercentage, productiveTimeDifferencePercentage, daysSinceAccountCreation};
  }

@@ -1,4 +1,4 @@
-import { getAmountSpendsByDays, getTimeSpendsByDays, avgAmountSpendsByTime, avgTimeSpendsByDays, getBeforeMonthAmountData, getBeforeMonthAvgAmountData, getBeforeWeekTimeData, getBeforeWeekAvgTimeData } from '../helper.js';
+import { getAmountSpendsByDays, getTimeSpendsByDays, avgAmountSpendsByTime, avgTimeSpendsByDays, getBeforeMonthAmountData, getBeforeMonthAvgAmountData, getBeforeWeekTimeData, getBeforeWeekAvgTimeData, getTimeChartData, getAmountChartData } from '../service.js';
 
 export const getStatistics = async (req, res) => {
     try{
@@ -69,4 +69,20 @@ export const getAmountStatistics = async (req, res) => {
     } catch(err) {
         res.status(500).json({success: false, message: err.message});
     }
+}
+
+export const getChartData = async (req, res) => {
+   try {
+      const time = await getTimeChartData(req.user.id);
+      const amount = await getAmountChartData(req.user.id);
+
+      const chartData = {
+         time,
+         amount
+      }
+
+      res.status(200).json({success: true, chartData});
+   } catch (err) {
+      res.status(500).json({success: false,  message: err.message});
+   }
 }

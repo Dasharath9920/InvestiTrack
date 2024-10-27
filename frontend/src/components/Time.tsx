@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button, Modal, Form, ListGroup, Card, Container, Row, Col, Dropdown } from 'react-bootstrap';
 import { FaPlus, FaClock, FaList, FaChartBar, FaEllipsisV, FaEdit, FaTrash, FaHourglassHalf, FaChartLine } from 'react-icons/fa';
 import { TIME_CATEGORIES, ACCESS_TOKEN } from '../constants/constants';
@@ -32,6 +32,8 @@ const Time: React.FC = () => {
   const [editing, setEditing] = useState(false);
   const [validated, setValidated] = useState(false);
   const user = useSelector((state: any) => state.user);
+
+  const fetchedRef = useRef(false);
 
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
@@ -133,8 +135,9 @@ const Time: React.FC = () => {
   };
 
   useEffect(() => {
-    if(user.isLoggedIn){
+    if(user.isLoggedIn && !fetchedRef.current){
       fetchTimeData();
+      fetchedRef.current = true;
     }
   }, [user.isLoggedIn]);
 

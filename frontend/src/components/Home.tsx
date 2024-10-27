@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Container, Row, Col, Card, Spinner, ProgressBar } from 'react-bootstrap';
 import { FaRupeeSign, FaClock, FaChartLine, FaChartPie } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
@@ -10,7 +10,7 @@ const Home = () => {
   const user = useSelector((state: any) => state.user);
   const [statistics, setStatistics] = useState<Statistics>();
   const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
-
+  const fetchedRef = useRef(false);
   const fetchData = async () => {
     const resp = await fetch('http://localhost:3000/api/entries/dashboard', {
       method: 'GET',
@@ -26,8 +26,9 @@ const Home = () => {
   }
 
   useEffect(() => {
-    if (user.isLoggedIn) {
+    if (user.isLoggedIn && !fetchedRef.current) {
       fetchData();
+      fetchedRef.current = true;
     }
   }, [user.isLoggedIn]);
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button, Modal, Form, ListGroup, Card, Container, Row, Col, Dropdown } from 'react-bootstrap';
 import { FaPlus, FaRupeeSign, FaList, FaChartBar, FaEdit, FaTrash, FaEllipsisV, FaChartLine } from 'react-icons/fa';
 import { AMOUNT_CATEGORIES, ACCESS_TOKEN } from '../constants/constants';
@@ -29,6 +29,9 @@ const Amount: React.FC = () => {
   const [currentEntry, setCurrentEntry] = useState<AmountEntry>(initialEntry);
   const [editing, setEditing] = useState(false);
   const [validated, setValidated] = useState(false);
+
+  const fetchedRef = useRef(false);
+
   const user = useSelector((state: any) => state.user);
 
   const handleClose = () => setShowModal(false);
@@ -131,8 +134,9 @@ const Amount: React.FC = () => {
   };
 
   useEffect(() => {
-    if(user.isLoggedIn){
+    if(user.isLoggedIn && !fetchedRef.current){
       fetchAmountData();
+      fetchedRef.current = true;
     }
   }, [user.isLoggedIn]);
 

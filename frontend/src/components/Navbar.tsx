@@ -38,10 +38,10 @@ const CustomNavbar = () => {
   };
 
   return (
-    <Navbar expand="lg" sticky='top' bg='white' className='shadow-sm mb-3'>
+    <Navbar expand="lg" sticky='top' bg='white' className='shadow-sm mb-3 py-0'>
       <Container>
         <Navbar.Brand as={Link} to="/">
-          <Image src="/images/logo.png" alt="logo" width="140" height="auto" />
+          <Image src="/images/logo.png" alt="logo" width="150" height="auto" />
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">

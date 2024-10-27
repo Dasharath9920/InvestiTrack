@@ -17,9 +17,16 @@ export const createMoneyData = asyncHandler(async (req, res) => {
          throw new Error('All fields are required');
       }
 
-      const newMoneyData = new Amount({amount, spentOn, userId: req.user.id, otherCategory, expenditureDate});
-      await newMoneyData.save();
-      res.status(201).json({success: true, newMoneyData});
+      let data = await Amount.find({userId: req.user.id, spentOn: spentOn, expenditureDate: expenditureDate});
+      if(data.length > 0){
+         data[0].amount = data[0].amount + amount;
+         await data[0].save();
+      }
+      else{
+         data = new Amount({amount, spentOn, userId: req.user.id, otherCategory, expenditureDate});
+         await data.save();
+      }
+      res.status(201).json({success: true, newMoneyData: data});
    } catch(err) {
       res.status(500).json({success: false, message: err.message});
    }

@@ -129,7 +129,7 @@ export const getAmountStatistics = async () => {
    }
 }
 
-export const getSafeLimits = async () => {
+export const getSafeLimits = () => {
    let safeLimits: any = {
       time: {},
       amount: {}
@@ -147,4 +147,25 @@ export const getSafeLimits = async () => {
    });
 
    return safeLimits;
+}
+
+export const getChartData = async () => {
+   try {
+      const token = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
+      const response = await fetch('http://localhost:3000/api/statistics/chart', {
+         method: 'GET',
+         headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+         }
+      });
+      const result = await response.json();
+      if(result.success){
+         result.chartData.time = addMissingCategoriesToTimeData(result.chartData.time);
+         result.chartData.amount = addMissingCategoriesToAmountData(result.chartData.amount);
+      }
+      return {success: true, chartData: result.chartData};
+   } catch(err: any) {
+      return {success: false, message: err.message};
+   }
 }

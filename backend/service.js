@@ -164,3 +164,77 @@ export const getBeforeWeekAvgTimeData = async (userId) => {
       return [];
    }
 }
+
+export const getTimeChartData = async (userId) => {
+   let chartData = {
+      dataFor7Days: {},
+      dataFor30Days: {},
+      dataFor6Months: {},
+      dataFor12Months: {},
+      dataFor5Years: {}
+   }
+   try {
+      const periods = [
+         { key: 'dataFor7Days', days: 7 },
+         { key: 'dataFor30Days', days: 30 },
+         { key: 'dataFor6Months', days: 180 },
+         { key: 'dataFor12Months', days: 365 },
+         { key: 'dataFor5Years', days: 1825 }
+      ];
+
+      for(const period of periods){
+         const days = new Date();
+         days.setDate(days.getDate() - period.days);
+         const data = await Time.aggregate([
+            { $match: { userId: new mongoose.Types.ObjectId(userId), activityDate: { $gte: days}}},
+            { $group: {_id: '$investedIn', totalTime: { $sum: '$time'}}}
+         ]);
+
+         if(data.length){
+            chartData[period.key] = data.map(item => ({investedIn: item._id, totalTime: item.totalTime}));
+            chartData[period.key].sort((a, b) => a.investedIn.localeCompare(b.investedIn));
+         }
+      }
+
+      return chartData;
+   } catch (err) {
+      return chartData;
+   }
+}
+
+export const getAmountChartData = async (userId) => {
+   let chartData = {
+      dataFor7Days: {},
+      dataFor30Days: {},
+      dataFor6Months: {},
+      dataFor12Months: {},
+      dataFor5Years: {}
+   }
+   try {
+      const periods = [
+         { key: 'dataFor7Days', days: 7 },
+         { key: 'dataFor30Days', days: 30 },
+         { key: 'dataFor6Months', days: 180 },
+         { key: 'dataFor12Months', days: 365 },
+         { key: 'dataFor5Years', days: 1825 }
+      ];
+
+      for(const period of periods){
+         const days = new Date();
+         days.setDate(days.getDate() - period.days);
+         const data = await Amount.aggregate([
+            { $match: { userId: new mongoose.Types.ObjectId(userId), expenditureDate: { $gte: days}}},
+            { $group: {_id: '$spentOn', totalAmount: { $sum: '$amount'}}}
+         ]);
+
+         if(data.length){
+            chartData[period.key] = data.map(item => ({spentOn: item._id, totalAmount: item.totalAmount}));
+            chartData[period.key].sort((a, b) => a.spentOn.localeCompare(b.spentOn));
+         }
+      }
+
+      return chartData;
+   } catch (err) {
+      return chartData;
+   }
+}

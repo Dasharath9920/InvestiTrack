@@ -6,7 +6,7 @@
  }
  
  .custom-progress-bar-fill {
-   height: 12px;
+   height: 10px;
    display: flex;
    align-items: center;
    transition: width 1s ease;
