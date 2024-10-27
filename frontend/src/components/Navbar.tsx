@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Navbar, Nav, Container, Image, Button, Dropdown } from 'react-bootstrap';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { IoPerson, IoLogIn } from "react-icons/io5";
@@ -24,6 +24,8 @@ const CustomNavbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const [expanded, setExpanded] = useState(false);
+
   const logoutHandler = () => {
     dispatch({
       type: actionTypes.SET_USER,
@@ -38,19 +40,19 @@ const CustomNavbar = () => {
   };
 
   return (
-    <Navbar expand="lg" sticky='top' bg='white' className='shadow-sm mb-3 py-0'>
+    <Navbar expand="lg" sticky='top' bg='white' className='shadow-sm mb-3 py-0' expanded={expanded}>
       <Container>
         <Navbar.Brand as={Link} to="/">
           <Image src="/images/logo.png" alt="logo" width="150" height="auto" />
         </Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={() => setExpanded(true)} />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className='justify-content-end flex-grow-1 pe-3 me-5'>
-            <NavLink to="/" className={({ isActive }) => `nav-link me-3 ${isActive ? 'active' : ''}`}>Dashboard</NavLink>
-            <NavLink to="/time" className={({ isActive }) => `nav-link me-3 ${isActive ? 'active' : ''}`}>Time</NavLink>
-            <NavLink to="/amount" className={({ isActive }) => `nav-link me-3 ${isActive ? 'active' : ''}`}>Amount</NavLink>
-            <NavLink to="/statistics" className={({ isActive }) => `nav-link me-3 ${isActive ? 'active' : ''}`}>Statistics</NavLink>
-            <NavLink to="/settings" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>Settings</NavLink>
+            <NavLink to="/" className={({ isActive }) => `nav-link me-3 ${isActive ? 'active' : ''}`} onClick={() => setExpanded(false)}>Dashboard</NavLink>
+            <NavLink to="/time" className={({ isActive }) => `nav-link me-3 ${isActive ? 'active' : ''}`} onClick={() => setExpanded(false)}>Time</NavLink>
+            <NavLink to="/amount" className={({ isActive }) => `nav-link me-3 ${isActive ? 'active' : ''}`} onClick={() => setExpanded(false)}>Amount</NavLink>
+            <NavLink to="/statistics" className={({ isActive }) => `nav-link me-3 ${isActive ? 'active' : ''}`} onClick={() => setExpanded(false)}>Statistics</NavLink>
+            <NavLink to="/settings" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} onClick={() => setExpanded(false)}>Settings</NavLink>
           </Nav>
           <Nav>
             {user.isLoggedIn ? (
