@@ -62,13 +62,13 @@ const CustomNavbar = () => {
                     {user.profilePicture ? <Image src={user.profilePicture} roundedCircle width={32} height={32} /> : <IoPerson size={25} />}
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
-                    <Dropdown.Item onClick={() => navigate('/profile')}>Profile</Dropdown.Item>
-                    <Dropdown.Item onClick={logoutHandler}>Logout</Dropdown.Item>
+                    <Dropdown.Item onClick={() => {setExpanded(false); navigate('/profile')}}>Profile</Dropdown.Item>
+                    <Dropdown.Item onClick={() => {setExpanded(false); logoutHandler()}}>Logout</Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
               </>
             ) : (
-              <Nav.Link as={Link} to="/login" className="me-2">
+              <Nav.Link as={Link} to="/login" className="me-2" onClick={() => setExpanded(false)}>
                 <Button variant="primary">
                   <IoLogIn size={20} className="me-1" />
                   Login
