@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
-import { Container, Row, Col, Card, Spinner, ProgressBar } from 'react-bootstrap';
+import { Container, Row, Col, Card, Spinner, ProgressBar, Button } from 'react-bootstrap';
 import { FaRupeeSign, FaClock, FaChartLine, FaChartPie } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { ACCESS_TOKEN } from '../constants/constants';
 import { formatTime } from '../helper';
 import { AmountEntry, TimeEntry, Statistics } from '../constants/dataTypes';
-
+import { useNavigate } from 'react-router-dom';
 const Home = () => {
   const user = useSelector((state: any) => state.user);
+  const navigate = useNavigate();
   const [statistics, setStatistics] = useState<Statistics>();
   const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
   const fetchedRef = useRef(false);
@@ -33,12 +34,16 @@ const Home = () => {
   }, [user.isLoggedIn]);
 
   return (
-    !statistics ? <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-      <Spinner animation="border" role="status" variant='success'>
-        <span className="visually-hidden">Loading...</span>
-      </Spinner>
-    </div> :
-      <Container className="py-3">
+    !user.isLoggedIn ? 
+    <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: '80vh' }}>
+    <div className="text-center p-5 bg-light rounded shadow">
+      <h2 className="mb-4">Please log in to view your dashboard</h2>
+      <Button onClick={() => navigate('/login')} variant="primary" size="lg">
+        Go to Login
+      </Button>
+    </div>
+  </Container> :
+      (statistics? <Container className="py-3">
         <h1 className="text-center mb-5">Dashboard</h1>
 
         {/* Statistics */}
@@ -135,7 +140,12 @@ const Home = () => {
             </Card>
           </Col>
         </Row>
-      </Container>
+      </Container> : 
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <Spinner animation="border" role="status" variant='success'>
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
+      </div>)
   );
 };
 

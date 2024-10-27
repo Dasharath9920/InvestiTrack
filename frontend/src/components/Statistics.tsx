@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { Card, Col, Container, Spinner, NavDropdown, Row, Stack } from 'react-bootstrap';
+import { Card, Col, Container, Spinner, NavDropdown, Row, Stack, Button } from 'react-bootstrap';
 import { getStatisticalData, getTimeDescription } from '../helper';
 import { FaFilePdf } from 'react-icons/fa';
 import { getStatistics, getTimeStatistics, getAmountStatistics, getSafeLimits, getChartData } from '../services/statisticService';
 import { TIME_PERIODS, SAFE_SPENDING_CATEGORIES, PRODUCTIVE_TIME_CATEGORIES } from '../constants/constants';
 import CurvedLineChart from './CurvedLineChart';
-
+import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 const Statistics = () => {
@@ -23,6 +23,7 @@ const Statistics = () => {
 
   const user = useSelector((state: any) => state.user);
   const fetchedRef = useRef(false);
+  const navigate = useNavigate();
 
   const fetchStatistics = async () => {
     try {
@@ -88,6 +89,15 @@ const Statistics = () => {
   }, [user.isLoggedIn]);
 
   return (
+    !user.isLoggedIn ? 
+    <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: '80vh' }}>
+      <div className="text-center p-5 bg-light rounded shadow">
+        <h2 className="mb-4">Please log in to view your statistics</h2>
+        <Button onClick={() => navigate('/login')} variant="primary" size="lg">
+          Go to Login
+        </Button>
+      </div>
+    </Container> :
     <Container>
       {loader ? (
         <div className="d-flex justify-content-center align-items-center" style={{ height: '80vh' }}>

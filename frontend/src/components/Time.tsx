@@ -5,7 +5,7 @@ import { TIME_CATEGORIES, ACCESS_TOKEN } from '../constants/constants';
 import { formatTime } from '../helper';
 import { TimeEntry } from '../constants/dataTypes';
 import { useSelector } from 'react-redux';
-
+import { useNavigate } from 'react-router-dom';
 const initialEntry: TimeEntry = {
   investedIn: Object.values(TIME_CATEGORIES)[0],
   time: 0,
@@ -34,6 +34,7 @@ const Time: React.FC = () => {
   const user = useSelector((state: any) => state.user);
 
   const fetchedRef = useRef(false);
+  const navigate = useNavigate();
 
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
@@ -144,6 +145,15 @@ const Time: React.FC = () => {
   const categories: string[] = Object.values(TIME_CATEGORIES);
 
   return (
+    !user.isLoggedIn ? 
+    <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: '80vh' }}>
+      <div className="text-center p-5 bg-light rounded shadow">
+        <h2 className="mb-4">Please log in to view your time investments</h2>
+        <Button onClick={() => navigate('/login')} variant="primary" size="lg">
+          Go to Login
+        </Button>
+      </div>
+    </Container> :
    <Container className="py-3">
      <Card className="shadow-sm border-1 bg-gradient mb-4">
        <Card.Body className="py-3 px-5">

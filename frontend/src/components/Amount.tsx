@@ -4,6 +4,8 @@ import { FaPlus, FaRupeeSign, FaEdit, FaTrash, FaEllipsisV, FaChartLine } from '
 import { AMOUNT_CATEGORIES, ACCESS_TOKEN } from '../constants/constants';
 import { AmountEntry } from '../constants/dataTypes';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+
 const initialEntry: AmountEntry = {
   spentOn: Object.values(AMOUNT_CATEGORIES)[0],
   amount: 0,
@@ -31,6 +33,7 @@ const Amount: React.FC = () => {
   const [validated, setValidated] = useState(false);
 
   const fetchedRef = useRef(false);
+  const navigate = useNavigate();
 
   const user = useSelector((state: any) => state.user);
 
@@ -143,6 +146,15 @@ const Amount: React.FC = () => {
   const categories: string[] = Object.values(AMOUNT_CATEGORIES);
 
   return (
+    !user.isLoggedIn ? 
+    <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: '80vh' }}>
+      <div className="text-center p-5 bg-light rounded shadow">
+        <h2 className="mb-4">Please log in to view your expenses</h2>
+        <Button onClick={() => navigate('/login')} variant="primary" size="lg">
+          Go to Login
+        </Button>
+      </div>
+    </Container> :
     <Container className="py-3">
       <Card className="shadow-sm border-1 bg-gradient mb-4">
        <Card.Body className="py-3 px-5">
