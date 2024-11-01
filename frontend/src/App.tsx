@@ -28,7 +28,9 @@ function App() {
     }
     
     if(!user.isLoggedIn && authToken){
-      fetchAndUpdateUserDetails(dispatch);
+      if(!(await fetchAndUpdateUserDetails(dispatch))){
+        navigate('/login');
+      }
     }
   }
 

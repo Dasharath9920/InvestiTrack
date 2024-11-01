@@ -13,30 +13,30 @@ export const getStatistics = async () => {
       const result = await response.json();
       if(result.success){
          Object.values(AMOUNT_CATEGORIES).forEach((category) => {
-            if(!result.statistics.lastMonthAmountData.find((amount: any) => amount.spentOn === category)){
+            if(!result.statistics.lastMonthAmountData.some((amount: any) => amount.spentOn === category)){
               result.statistics.lastMonthAmountData.push({spentOn: category, totalAmount: 0});
             }
-            if(!result.statistics.beforeMonthAmountData.find((amount: any) => amount.spentOn === category)){
+            if(!result.statistics.beforeMonthAmountData.some((amount: any) => amount.spentOn === category)){
               result.statistics.beforeMonthAmountData.push({spentOn: category, totalAmount: 0});
             }
-            if(!result.statistics.lastMonthAvgAmountData.find((amount: any) => amount.spentOn === category)){
+            if(!result.statistics.lastMonthAvgAmountData.some((amount: any) => amount.spentOn === category)){
               result.statistics.lastMonthAvgAmountData.push({spentOn: category, averageAmount: 0});
             }
-            if(!result.statistics.beforeMonthAvgAmountData.find((amount: any) => amount.spentOn === category)){
+            if(!result.statistics.beforeMonthAvgAmountData.some((amount: any) => amount.spentOn === category)){
               result.statistics.beforeMonthAvgAmountData.push({spentOn: category, averageAmount: 0});
             }
           });
           Object.values(TIME_CATEGORIES).forEach((category) => {
-            if(!result.statistics.lastWeekTimeData.find((time: any) => time.investedIn === category)){
+            if(!result.statistics.lastWeekTimeData.some((time: any) => time.investedIn === category)){
               result.statistics.lastWeekTimeData.push({investedIn: category, totalTime: 0});
             }
-            if(!result.statistics.beforeWeekTimeData.find((time: any) => time.investedIn === category)){
+            if(!result.statistics.beforeWeekTimeData.some((time: any) => time.investedIn === category)){
               result.statistics.beforeWeekTimeData.push({investedIn: category, totalTime: 0});
             }
-            if(!result.statistics.lastWeekAvgTimeData.find((time: any) => time.investedIn === category)){
+            if(!result.statistics.lastWeekAvgTimeData.some((time: any) => time.investedIn === category)){
               result.statistics.lastWeekAvgTimeData.push({investedIn: category, averageTime: 0});
             }
-            if(!result.statistics.beforeWeekAvgTimeData.find((time: any) => time.investedIn === category)){
+            if(!result.statistics.beforeWeekAvgTimeData.some((time: any) => time.investedIn === category)){
               result.statistics.beforeWeekAvgTimeData.push({investedIn: category, averageTime: 0});
             }
           });

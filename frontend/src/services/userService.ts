@@ -12,6 +12,10 @@ import actionTypes from '../constants/actionTypes';
       }
     });
     const data = await userDetails.json();
+    if(!data.success){
+      localStorage.removeItem(ACCESS_TOKEN);
+      return false;
+    }
     dispatch({
       type: actionTypes.SET_USER,
       payload: {
@@ -23,4 +27,5 @@ import actionTypes from '../constants/actionTypes';
         profilePicture: data.userData.profilePicture
       }
     }); 
+    return true;
 };

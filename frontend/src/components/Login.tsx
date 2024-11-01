@@ -35,15 +35,21 @@ const Login = () => {
     });
 
     const data: LoginResponse = await response.json();
-    setLoader(false);
     if(data.success){
       localStorage.setItem(ACCESS_TOKEN, JSON.stringify(data.accessToken));
       localStorage.setItem(EMAIL, JSON.stringify(email));
       
-      await fetchAndUpdateUserDetails(dispatch);
-      navigate('/');
+      if(await fetchAndUpdateUserDetails(dispatch)){
+        setLoader(false);
+        navigate('/');
+      }
+      else {
+        setLoader(false);
+        console.log('User is not authorized');
+      }
     }
     else{
+      setLoader(false);
       console.log('Error: '+ data.message);
     }
   }

@@ -153,6 +153,7 @@ export const getBeforeWeekAvgTimeData = async (userId) => {
 
       let data = await Time.aggregate([
          { $match: { userId: new mongoose.Types.ObjectId(userId), activityDate: { $gte: beforeWeekDays, $lte: currentWeekDays}}},
+         { $group: {_id: '$investedIn', averageTime: { $avg: '$time'}}}
       ]);
 
       if(data.length){

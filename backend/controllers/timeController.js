@@ -16,9 +16,9 @@ export const createTimeData = asyncHandler(async (req, res) => {
       if(!time || !investedIn || !activityDate){
          throw new Error('All fields are required');
       }
-      console.log('activityDate: ',activityDate)
+
       let data = await Time.find({userId: req.user.id, activityDate: activityDate, investedIn: investedIn});
-      console.log('data: ',data)
+      
       if(data.length > 0){
          data[0].time = data[0].time + time; 
          await data[0].save();

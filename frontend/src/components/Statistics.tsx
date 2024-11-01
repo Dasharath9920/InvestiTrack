@@ -126,7 +126,7 @@ const Statistics = () => {
                 <Card.Body className='p-4'>
                   <Card.Text className='text-muted mb-1'>Max Avg Amount ({statisticalData.maxAvgAmount?.spentOn})</Card.Text>
                   <Stack direction='horizontal' className='align-items-baseline justify-content-between'>
-                    <h4 className='mb-0 me-2 fw-bold'>₹{statisticalData.maxAvgAmount?.amount.toFixed(2)}<small className='fs-6 fw-normal'> / day</small></h4>
+                    <h4 className='mb-0 me-2 fw-bold'>₹{(statisticalData.maxAvgAmount?.amount || 0).toFixed(2)}<small className='fs-6 fw-normal'> / day</small></h4>
                     <small className={`text-${statisticalData.averageAmountDifferencePercentage <= 0 ? 'success' : 'danger'}`}>
                       {statisticalData.averageAmountDifferencePercentage >= 0 ? '↑' : '↓'} {statisticalData.averageAmountDifferencePercentage?.toFixed(2)}%
                     </small>
@@ -189,13 +189,12 @@ const Statistics = () => {
                       </Card.Body>
                     </Card>
                   </Col>
-                  <Col xs={2}>
-                    <button 
-                      className="btn btn-sm btn-outline-secondary" 
-                      style={{width: '120px', padding: '3px', backgroundColor: 'white', color: '#6c757d'}}>
-                      <FaFilePdf className="me-2" />
-                      Export PDF
-                    </button>
+                  <Col xs={2} className='d-flex justify-content-end'>
+                    <NavDropdown title={chartTimePeriod.label}>
+                        {TIME_PERIODS.map((period: any) => {
+                          return <NavDropdown.Item onClick={() => setChartTimePeriod(period)}>{period.label}</NavDropdown.Item>
+                        })}
+                    </NavDropdown>
                   </Col>
                 </Row>
                 <Row className="overflow-auto" style={{ height: '250px' }}>
@@ -294,9 +293,9 @@ const Statistics = () => {
                           <span className="custom-progress-bar-label">{getTimeDescription(Math.round(data.totalTime/Math.min(statisticalData.daysSinceAccountCreation, timePeriod.value)))} / day</span>
                         </Card.Text>
                         <div className="custom-progress-bar">
-                          <div className={`custom-progress-bar-fill ${getVariant(data.totalTime / Math.min(safeLimits?.time?.[timePeriod.id]?.[data.investedIn], data.investedIn), statisticalData.daysSinceAccountCreation)}`}
+                          <div className={`custom-progress-bar-fill ${getVariant(data.totalTime / safeLimits?.time?.[timePeriod.id]?.[data.investedIn], data.investedIn)}`}
                             style={{
-                              width: `${safeLimits?.time?.[timePeriod.id]?.[data.investedIn] ? Math.min(100, data.totalTime / safeLimits?.time?.[timePeriod.id]?.[data.investedIn] * 100) : 0}%`
+                              width: `${safeLimits?.time?.[timePeriod.id]?.[data.investedIn] ? Math.min(100, data.totalTime / safeLimits.time[timePeriod.id][data.investedIn] * 100) : 0}%`
                             }}
                           >
                           </div>

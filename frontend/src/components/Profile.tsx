@@ -29,10 +29,14 @@ const Profile = () => {
       });
 
       if(response.ok){
-        console.log('Profile picture uploaded successfully');
         setFile(null);
         setIsHovering(false);
-        fetchAndUpdateUserDetails(dispatch);
+        if(await fetchAndUpdateUserDetails(dispatch)){
+          console.log('Profile picture updated successfully');
+        }
+        else {
+          console.log('User is not authorized');
+        }
       } else {
         throw new Error('Failed to upload profile picture');
       }

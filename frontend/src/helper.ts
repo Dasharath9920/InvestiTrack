@@ -36,13 +36,13 @@ export const formatTime = (minutes: number): string => {
 
   const averageAmountDifferencePercentage = maxAvgAmountBeforeMonth.amount ? (maxAvgAmount.amount - maxAvgAmountBeforeMonth.amount)/maxAvgAmountBeforeMonth.amount*100 : 100;
 
-  const entertainmentTime = (data.lastWeekTimeData.find((curr: any) => curr.investedIn === TIME_CATEGORIES.ENTERTAINMENT).totalTime)/Math.min(7, daysSinceAccountCreation);
-  const beforeWeekEntertainmentTime = (data.beforeWeekTimeData.find((curr: any) => curr.investedIn === TIME_CATEGORIES.ENTERTAINMENT).totalTime)/Math.min(7, daysSinceAccountCreation);
+  const entertainmentTime = data.lastWeekAvgTimeData.find((curr: any) => curr.investedIn === TIME_CATEGORIES.ENTERTAINMENT)?.averageTime || 0;
+  const beforeWeekEntertainmentTime = data.beforeWeekAvgTimeData.find((curr: any) => curr.investedIn === TIME_CATEGORIES.ENTERTAINMENT)?.averageTime || 0;
 
   const entertainmentTimeDifferencePercentage = beforeWeekEntertainmentTime ? (entertainmentTime - beforeWeekEntertainmentTime)/beforeWeekEntertainmentTime*100 : 100;
 
-  const productiveTime = data.lastWeekTimeData.reduce((totalTime: number,curr: any) => PRODUCTIVE_TIME_CATEGORIES.includes(curr.investedIn) ? totalTime + curr.totalTime : totalTime, 0)/Math.min(7, daysSinceAccountCreation);
-  const beforeWeekProductiveTime = data.beforeWeekTimeData.reduce((totalTime: number,curr: any) => PRODUCTIVE_TIME_CATEGORIES.includes(curr.investedIn) ? totalTime + curr.totalTime : totalTime, 0)/Math.min(7, daysSinceAccountCreation);
+  const productiveTime = data.lastWeekAvgTimeData.reduce((avgTime: number, data: any) => PRODUCTIVE_TIME_CATEGORIES.includes(data.investedIn) ? avgTime + data.averageTime : avgTime, 0);
+  const beforeWeekProductiveTime = data.beforeWeekAvgTimeData.reduce((avgTime: number, data: any) => PRODUCTIVE_TIME_CATEGORIES.includes(data.investedIn) ? avgTime + data.averageTime : avgTime, 0);
 
   const productiveTimeDifferencePercentage = beforeWeekProductiveTime ? (productiveTime - beforeWeekProductiveTime)/beforeWeekProductiveTime*100 : 100;
 
