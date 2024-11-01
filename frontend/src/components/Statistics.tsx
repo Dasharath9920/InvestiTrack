@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Card, Col, Container, Spinner, NavDropdown, Row, Stack, Button } from 'react-bootstrap';
 import { getStatisticalData, getTimeDescription } from '../helper';
-import { FaFilePdf } from 'react-icons/fa';
 import { getStatistics, getTimeStatistics, getAmountStatistics, getSafeLimits, getChartData } from '../services/statisticService';
 import { TIME_PERIODS, SAFE_SPENDING_CATEGORIES, PRODUCTIVE_TIME_CATEGORIES } from '../constants/constants';
 import CurvedLineChart from './CurvedLineChart';
