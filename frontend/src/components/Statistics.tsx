@@ -8,9 +8,9 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 const initialChartQuery = {
-  chartType: 'time',
+  chartType: 'amount',
   chartTimePeriod: TIME_PERIODS[0],
-  chartCategory: TIME_CATEGORIES.WORK
+  chartCategory: AMOUNT_CATEGORIES.GROCERIES
 }
 
 const Statistics = () => {
