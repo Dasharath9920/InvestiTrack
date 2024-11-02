@@ -149,10 +149,15 @@ export const getSafeLimits = () => {
    return safeLimits;
 }
 
-export const getChartData = async () => {
+export const getChartData = async (type: string, daysToBeSkipped: number, timePeriod: string) => {
    try {
       const token = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
-      const response = await fetch('/api/statistics/chart', {
+      const queryParams = new URLSearchParams({
+         daysToBeSkipped: daysToBeSkipped.toString(),
+         timePeriod: timePeriod
+      }).toString();
+      
+      const response = await fetch(`/api/statistics/chart/${type}?${queryParams}`, {
          method: 'GET',
          headers: {
             'Content-Type': 'application/json',
@@ -160,11 +165,7 @@ export const getChartData = async () => {
          }
       });
       const result = await response.json();
-      if(result.success){
-         result.chartData.time = addMissingCategoriesToTimeData(result.chartData.time);
-         result.chartData.amount = addMissingCategoriesToAmountData(result.chartData.amount);
-      }
-      return {success: true, chartData: result.chartData};
+      return {success: true, chartData: result.data};
    } catch(err: any) {
       return {success: false, message: err.message};
    }

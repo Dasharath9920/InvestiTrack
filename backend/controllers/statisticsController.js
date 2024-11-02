@@ -71,18 +71,22 @@ export const getAmountStatistics = async (req, res) => {
     }
 }
 
-export const getChartData = async (req, res) => {
-   try {
-      const time = await getTimeChartData(req.user.id);
-      const amount = await getAmountChartData(req.user.id);
+export const timeChartData = async (req, res) => {
+    try {
+        const { timePeriod, daysToBeSkipped } = req.query;
+        const data = await getTimeChartData(req.user.id, timePeriod, daysToBeSkipped);
+        return res.status(200).json({success: true, data});
+    } catch (err) {
+        return res.status(500).json({success: false, message: err.message});
+    }
+}
 
-      const chartData = {
-         time,
-         amount
-      }
-
-      res.status(200).json({success: true, chartData});
-   } catch (err) {
-      res.status(500).json({success: false,  message: err.message});
-   }
+export const amountChartData = async (req, res) => {
+    try {
+        const { timePeriod, daysToBeSkipped } = req.query;
+        const data = await getAmountChartData(req.user.id, timePeriod, daysToBeSkipped);
+        return res.status(200).json({success: true, data});
+    } catch (err) {
+        return res.status(500).json({success: false, message: err.message});
+    }
 }

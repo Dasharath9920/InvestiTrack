@@ -1,4 +1,6 @@
 import { Line } from 'react-chartjs-2';
+import { BsChevronLeft, BsChevronRight } from 'react-icons/bs';  // Add this import at the top
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,6 +12,7 @@ import {
   Filler,
   Legend
 } from 'chart.js';
+import { Col, Stack } from 'react-bootstrap';
 
 // Register required components with ChartJS
 ChartJS.register(
@@ -27,11 +30,11 @@ const CurvedLineChart = ({chartData, category, timePeriod}: {chartData: any, cat
   // Chart data
   if(!chartData || !category) return null;
   const data = {
-    labels: chartData.map((item: any) => category === 'time' ? item.investedIn : item.spentOn),
+    labels: chartData.map((item: any) => item.date),
     datasets: [
       {
         label: category[0].toUpperCase() + category.slice(1) + `${category === 'time' ? ' in hours' : ''}`,
-        data: chartData.map((item: any) => category === 'time' ? item.totalTime/60 : item.totalAmount),
+        data: chartData.map((item: any) => item.time),
         fill: true,
         backgroundColor: 'rgba(53, 162, 235, 0.2)',
         borderColor: 'rgba(53, 162, 235, 1)',
@@ -66,9 +69,31 @@ const CurvedLineChart = ({chartData, category, timePeriod}: {chartData: any, cat
     },
   };
 
-  return <div style={{ height: '250px', width: '100%', margin: 'auto' }}>
-      <Line data={data} options={options} style={{height: '100%', width: '90%'}}/>
-   </div>
+  return <Stack direction='horizontal' gap={2} style={{ height: '250px', width: '100%', margin: 'auto' }}>
+      <Col xs='auto'>
+        <button 
+          className="btn btn-link p-0" 
+          style={{ color: 'rgba(53, 162, 235, 1)' }}
+          onClick={() => {/* Add your prev handler here */}}
+        >
+          <BsChevronLeft size={32} />
+        </button>
+      </Col>
+
+      <Col>
+        <Line data={data} options={options} style={{height: '250px', width: '100%'}}/>
+      </Col>
+
+      <Col xs='auto'>
+        <button 
+          className="btn btn-link p-0"
+          style={{ color: 'rgba(53, 162, 235, 1)' }}
+          onClick={() => {/* Add your next handler here */}}
+      >
+          <BsChevronRight size={32} />
+        </button>
+      </Col>
+    </Stack>
 };
 
 export default CurvedLineChart;

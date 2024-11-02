@@ -2,10 +2,16 @@ import { useState, useEffect, useRef } from 'react';
 import { Card, Col, Container, Spinner, NavDropdown, Row, Stack, Button } from 'react-bootstrap';
 import { getStatisticalData, getTimeDescription } from '../helper';
 import { getStatistics, getTimeStatistics, getAmountStatistics, getSafeLimits, getChartData } from '../services/statisticService';
-import { TIME_PERIODS, SAFE_SPENDING_CATEGORIES, PRODUCTIVE_TIME_CATEGORIES } from '../constants/constants';
+import { TIME_PERIODS, SAFE_SPENDING_CATEGORIES, SAFE_TIME_CATEGORIES, TIME_CATEGORIES, AMOUNT_CATEGORIES, CHART_DATA_TIME_PERIODS } from '../constants/constants';
 import CurvedLineChart from './CurvedLineChart';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+
+const initialChartQuery = {
+  chartType: 'time',
+  chartTimePeriod: TIME_PERIODS[0],
+  chartCategory: TIME_CATEGORIES.WORK
+}
 
 const Statistics = () => {
 
@@ -13,16 +19,16 @@ const Statistics = () => {
   const [amountStatistics, setAmountStatistics] = useState<any>(null);
   const [timePeriod, setTimePeriod] = useState<any>(TIME_PERIODS[0]);
   const [amountPeriod, setAmountPeriod] = useState<any>(TIME_PERIODS[0]);
-  const [chartTimePeriod, setChartTimePeriod] = useState<any>(TIME_PERIODS[0]);
-  const [chartCategory, setChartCategory] = useState<string>('time');
   const [statisticalData, setStatisticalData] = useState<any>({});
-  const [safeLimits, setSafeLimits] = useState<any>(null);
+  const [chartQuery, setChartQuery] = useState<any>(initialChartQuery);
   const [loader, setLoader] = useState<boolean>(false);
   const [chartData, setChartData] = useState<any>(null);
 
   const user = useSelector((state: any) => state.user);
   const fetchedRef = useRef(false);
   const navigate = useNavigate();
+
+  const safeLimits = getSafeLimits();
 
   const fetchStatistics = async () => {
     try {
@@ -49,22 +55,17 @@ const Statistics = () => {
   }
 
   const fetchChartData = async () => {
-    const result: any = await getChartData();
+    const result: any = await getChartData(chartQuery.chartType, 0, chartQuery.chartTimePeriod.id);
     if(result.success){
       setChartData(result.chartData);
     } else {
       console.log(result.message);
     }
   }
-
-  const fetchSafeLimits = () => {
-    const result: any = getSafeLimits();
-    setSafeLimits(result);
-  }
   
   const getVariant = (value: number, category: string) => {
     value *= 100;
-    if(SAFE_SPENDING_CATEGORIES.includes(category) || PRODUCTIVE_TIME_CATEGORIES.includes(category)){
+    if(SAFE_SPENDING_CATEGORIES.includes(category) || SAFE_TIME_CATEGORIES.includes(category)){
       return value >= 100 ? 'success' : value > 90 ? 'warning' : 'danger';
     }
     return value >= 100 ? 'danger' : value > 90 ? 'warning' : 'success';
@@ -75,10 +76,12 @@ const Statistics = () => {
     await fetchStatistics();
     await fetchTimeStatistics();
     await fetchAmountStatistics();
-    await fetchChartData();
-    fetchSafeLimits();
     setLoader(false);
   }
+
+  useEffect(() => {
+    fetchChartData();
+  }, [chartQuery]);
 
   useEffect(() => {
     if(user.isLoggedIn && !fetchedRef.current){
@@ -166,20 +169,20 @@ const Statistics = () => {
             <Card className='h-100 p-2'>
               <Card.Body>
                 <Row className="align-items-center mb-4">
-                  <Col xs={2}>
-                    <NavDropdown title={chartCategory === 'time' ? 'Time Report' : 'Amount Report'}>
-                      <NavDropdown.Item onClick={() => setChartCategory('time')}>Time Report</NavDropdown.Item>
-                      <NavDropdown.Item onClick={() => setChartCategory('amount')}>Amount Report</NavDropdown.Item>
+                  <Col xs={3}>
+                    <NavDropdown title={chartQuery.chartType === 'time' ? 'Time' : 'Amount'}>
+                      <NavDropdown.Item onClick={() => {setChartQuery({...chartQuery, chartType: 'time', chartCategory: TIME_CATEGORIES.WORK});}}>Time Report</NavDropdown.Item>
+                      <NavDropdown.Item onClick={() => {setChartQuery({...chartQuery, chartType: 'amount', chartCategory: AMOUNT_CATEGORIES.GROCERIES});}}>Amount Report</NavDropdown.Item>
                     </NavDropdown>
                   </Col>
-                  <Col xs={8}>
+                  <Col xs={6}>
                     <Card className="border-0">
                       <Card.Body className="p-0 d-flex justify-content-center">
                         <Stack direction="horizontal" gap={2} className='flex-wrap'>
-                          {TIME_PERIODS.map((period) => (
+                          {CHART_DATA_TIME_PERIODS.map((period) => (
                             <button key={period.id} className="btn btn-sm btn-outline-secondary" 
-                              style={{ width: '90px', padding: '3px', backgroundColor: 'white', borderWidth: period.id === chartTimePeriod.id ? '1.5px' : '.2px', color: '#6c757d' }} 
-                              onClick={() => setChartTimePeriod(period)}
+                              style={{ width: '90px', padding: '3px', backgroundColor: 'white', borderWidth: period.id === chartQuery.chartTimePeriod.id ? '1.5px' : '.2px', color: '#6c757d' }} 
+                              onClick={() => setChartQuery({...chartQuery, chartTimePeriod: period})}
                             >
                               {period.label}
                             </button>
@@ -188,17 +191,20 @@ const Statistics = () => {
                       </Card.Body>
                     </Card>
                   </Col>
-                  <Col xs={2} className='d-flex justify-content-end'>
-                    <NavDropdown title={chartTimePeriod.label}>
-                        {TIME_PERIODS.map((period: any) => {
-                          return <NavDropdown.Item onClick={() => setChartTimePeriod(period)}>{period.label}</NavDropdown.Item>
+                  <Col xs={3} className='d-flex justify-content-end'>
+                    <NavDropdown title={chartQuery.chartCategory}>
+                        {chartQuery.chartType === 'time'  && Object.values(TIME_CATEGORIES).map((category: string) => {
+                          return <NavDropdown.Item onClick={() => setChartQuery({...chartQuery, chartCategory: category})}>{category}</NavDropdown.Item>
+                        })}
+                        {chartQuery.chartType === 'amount'  && Object.values(AMOUNT_CATEGORIES).map((category: string) => {
+                          return <NavDropdown.Item onClick={() => setChartQuery({...chartQuery, chartCategory: category})}>{category}</NavDropdown.Item>
                         })}
                     </NavDropdown>
                   </Col>
                 </Row>
                 <Row className="overflow-auto" style={{ height: '250px' }}>
                   <Col className='p-0'>
-                    <CurvedLineChart chartData={chartData?.[chartCategory]?.[chartTimePeriod.id]} category={chartCategory} timePeriod={chartTimePeriod} />
+                    <CurvedLineChart chartData={chartData?.[chartQuery.chartCategory]} category={chartQuery.chartCategory} timePeriod={chartQuery.chartTimePeriod} />
                   </Col>
                 </Row>
               </Card.Body>

@@ -55,7 +55,7 @@ export const SAFE_SPENDING_CATEGORIES: Array<string> = [
    AMOUNT_CATEGORIES.DEBT
 ];
 
-export const PRODUCTIVE_TIME_CATEGORIES: Array<string> = [
+export const SAFE_TIME_CATEGORIES: Array<string> = [
    TIME_CATEGORIES.SLEEP,
    TIME_CATEGORIES.WORK,
    TIME_CATEGORIES.STUDY,
@@ -64,6 +64,15 @@ export const PRODUCTIVE_TIME_CATEGORIES: Array<string> = [
    TIME_CATEGORIES.SPORT,
    TIME_CATEGORIES.WORKOUT,
    TIME_CATEGORIES.FAMILY
+]
+
+export const PRODUCTIVE_TIME_CATEGORIES: Array<string> = [
+   TIME_CATEGORIES.WORK,
+   TIME_CATEGORIES.STUDY,
+   TIME_CATEGORIES.MEDITATION,
+   TIME_CATEGORIES.PERSONAL_DEVELOPMENT,
+   TIME_CATEGORIES.SPORT,
+   TIME_CATEGORIES.WORKOUT
 ]
 
 export const TIME_PERIODS = [
@@ -124,3 +133,21 @@ export const SAFE_LIMITS_WEEKLY = {
       [AMOUNT_CATEGORIES.OTHER]: 1000
    }
  };
+
+   export const CHART_DATA_TIME_PERIODS = [
+      {
+         label: '7 days',
+         value: 7,
+         id: 'dataFor7Days'
+      },
+      {
+         label: '30 days',
+         value: 30,
+         id: 'dataFor30Days'
+      },
+      {
+         label: '1 year',
+         value: 360,
+         id: 'dataFor1Year'
+      }
+   ]
