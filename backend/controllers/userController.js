@@ -15,20 +15,18 @@ export const createUser = asyncHandler(async (req, res) => {
          throw new Error('User already exists');
       }
 
-      const apiKey = process.env.MAILBOXLAYER_KEY;
+      const apiKey = process.env.ABSTRACT_API_KEY;
 
-      const response = await axios.get(`http://apilayer.net/api/check`, {
+      const response = await axios.get(`https://emailvalidation.abstractapi.com/v1`, {
          params: {
-            access_key: apiKey,
-            email: email,
-            smtp: 1,
-            format: 1
+            api_key: apiKey,
+            email: email
          }
       });
 
       const data = response.data;
 
-      if (!data.format_valid || !data.smtp_check) {
+      if (!data.is_valid_format.value || !data.is_smtp_valid.value) {
          throw new Error('Invalid email or email address is undeliverable.');
       }
 

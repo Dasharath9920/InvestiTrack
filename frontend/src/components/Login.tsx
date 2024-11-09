@@ -70,7 +70,7 @@ const Login = () => {
     const data: RegisterResponse = await response.json();
     setLoader(false);
     if(data.success){
-      alert('User registered successfully');
+      alert(`User registered successfully with email: ${email}`);
       setTab('login');
     }
     else{
