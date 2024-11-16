@@ -198,8 +198,8 @@ const Time: React.FC = () => {
      </Card>
 
      <Card className="shadow-sm">
-        <Card.Header className="bg-success text-white">
-          <FaChartLine className="me-2" /> Recent Amount Entries
+        <Card.Header className="bg-primary text-white">
+          <FaChartLine className="me-2" /> Recent Time Entries
         </Card.Header>
         <Card.Body>
           <ListGroup className="mx-auto" style={{ maxWidth: '100%', height: '450px', overflowY: 'auto' }} onScroll={handleScroll}>

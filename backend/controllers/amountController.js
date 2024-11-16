@@ -1,9 +1,31 @@
 import asyncHandler from 'express-async-handler';
 import Amount from '../models/money.model.js';
+import mongoose from 'mongoose';
 
 export const getAllMoneyData = asyncHandler(async (req, res) => {
    try{
-      const amountData = await Amount.find({userId: req.user.id}).sort({createdAt: -1});
+      let amountData = await Amount.aggregate([
+         {
+            $match: {userId: new mongoose.Types.ObjectId(req.user.id)}
+         },
+         {
+            $group: {
+               _id: "$expenditureDate",
+               data: {$push: "$$ROOT"},
+               totalAmount: {$sum: "$amount"}
+            }
+         },
+         {
+            $sort: {_id: -1}
+         }
+      ]);
+      if(amountData.length){
+         amountData = amountData.map(entry => ({
+            expenditureDate: entry._id,
+            data: entry.data.sort((a, b) => a.amount - b.amount),
+            totalAmount: entry.totalAmount
+         }));
+      }
       res.status(200).json({success: true, amountData});
    } catch(err) {
       res.status(500).json({success: false, message: err.message});

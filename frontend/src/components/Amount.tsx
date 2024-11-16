@@ -26,7 +26,7 @@ const CustomToggle = React.forwardRef(({ children, onClick }: { children: React.
 ));
 
 const Amount: React.FC = () => {
-  const [entries, setEntries] = useState<AmountEntry[]>([]);
+  const [entries, setEntries] = useState<any[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [currentEntry, setCurrentEntry] = useState<AmountEntry>(initialEntry);
   const [editing, setEditing] = useState(false);
@@ -132,7 +132,8 @@ const Amount: React.FC = () => {
     });
     const data = await resp.json();
     if(data.success){
-      setEntries(data.amountData.map((amountData: any) => ({...amountData, expenditureDate: amountData.expenditureDate.split('T')[0]})));
+      const newEntries = data.amountData.map((amountData: any) => ({...amountData, expenditureDate: amountData.expenditureDate.split('T')[0]}));
+      setEntries(newEntries);
     }
   };
 
@@ -185,23 +186,30 @@ const Amount: React.FC = () => {
               <ListGroup.Item key={index} className="mb-2 border-0">
                 <Card className="shadow-sm">
                   <Card.Body>
-                    <div className="d-flex justify-content-between align-items-center mb-2">
-                      <Card.Title className="fw-bold mb-0">{item.spentOn} {item.otherCategory && `(${item.otherCategory})`}</Card.Title>
-                      <Dropdown align="end">
-                        <Dropdown.Toggle as={CustomToggle} id={`dropdown-${index}`}>
-                          <FaEllipsisV />
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          <Dropdown.Item onClick={() => handleEdit(item)}><FaEdit className="me-2" /> Edit</Dropdown.Item>
-                          <Dropdown.Item onClick={() => handleDelete(item)}><FaTrash className="me-2" /> Delete</Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </div>
-                    <div className="d-flex align-items-end justify-content-between text-muted small">
-                      <Card.Text className="text-success fs-4 mb-0">₹{item.amount.toFixed(2)}</Card.Text>
-                      <span>
-                        <strong>Spent on:</strong> {new Date(item.expenditureDate || '').toLocaleDateString()}
-                      </span>
+                  <div className="mb-2">
+                      <div className='d-flex justify-content-between align-items-center'>
+                        <h6>{item.expenditureDate}</h6>
+                        <p className='text-muted'>Total: ₹{item.totalAmount.toLocaleString('en-IN')}</p>
+                      </div>
+                      <ul className="list-unstyled">
+                        {item.data.map((data: any) => {
+                          return <li key={data._id} className='d-flex justify-content-between align-items-center'>
+                            <h6>{data.spentOn} {data.otherCategory && `(${data.otherCategory})`}</h6>
+                            <div className='d-flex align-items-center'>
+                              <p>{data.amount.toLocaleString('en-IN')}</p>
+                              <Dropdown align="end">
+                                <Dropdown.Toggle as={CustomToggle} id={`dropdown-${index}`}>
+                                  <FaEllipsisV />
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                  <Dropdown.Item onClick={() => handleEdit(data)}><FaEdit className="me-2" /> Edit</Dropdown.Item>
+                                  <Dropdown.Item onClick={() => handleDelete(data)}><FaTrash className="me-2" /> Delete</Dropdown.Item>
+                                </Dropdown.Menu>
+                              </Dropdown>
+                            </div>
+                          </li>
+                        })}
+                      </ul>
                     </div>
                   </Card.Body>
                 </Card>
