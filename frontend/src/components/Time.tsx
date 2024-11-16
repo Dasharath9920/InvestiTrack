@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button, Modal, Form, ListGroup, Card, Container, Row, Col, Dropdown } from 'react-bootstrap';
+import { Button, Modal, Form, ListGroup, Card, Container, Row, Col, Dropdown, Spinner } from 'react-bootstrap';
 import { FaPlus, FaClock, FaEllipsisV, FaEdit, FaTrash, FaHourglassHalf, FaChartLine } from 'react-icons/fa';
 import { TIME_CATEGORIES, ACCESS_TOKEN } from '../constants/constants';
 import { formatTime } from '../helper';
@@ -26,11 +26,14 @@ const CustomToggle = React.forwardRef(({ children, onClick }: { children: React.
 ));
 
 const Time: React.FC = () => {
-  const [entries, setEntries] = useState<TimeEntry[]>([]);
+  const [entries, setEntries] = useState<any[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [currentEntry, setCurrentEntry] = useState<TimeEntry>(initialEntry);
   const [editing, setEditing] = useState(false);
   const [validated, setValidated] = useState(false);
+  const [skip, setSkip] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const user = useSelector((state: any) => state.user);
 
   const fetchedRef = useRef(false);
@@ -74,7 +77,13 @@ const Time: React.FC = () => {
       });
       const data = await resp.json();
       if(data.success){
-        fetchTimeData();
+        let currentEntries = entries.map((entry: any) => {
+          if(entry.activityDate === data.updatedTimeData.activityDate.split('T')[0]){
+            entry.data.map((_data: any) => _data._id === data.updatedTimeData._id ? data.updatedTimeData : _data);
+          }
+          return entry;
+        });
+        setEntries(currentEntries);
         setEditing(false);
         setCurrentEntry(initialEntry);
         handleClose();
@@ -109,7 +118,7 @@ const Time: React.FC = () => {
     const data = await resp.json();
     if(data.success){
       console.log('data: ',data);
-      fetchTimeData();
+      fetchTimeData(skip);
     } else{
       console.log('error: ',data);
     }
@@ -120,9 +129,13 @@ const Time: React.FC = () => {
     setCurrentEntry({...currentEntry, time: value});
   };
 
-  const fetchTimeData = async () => {
+  const fetchTimeData = async (skip: number) => {
+    if(isLoading || !hasMore) return;
+
+    setIsLoading(true);
+    setSkip(skip);
     const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
-    const resp = await fetch('/api/entries/time',{
+    const resp = await fetch(`/api/entries/time?skip=${skip}`,{
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -131,13 +144,23 @@ const Time: React.FC = () => {
     });
     const data = await resp.json();
     if(data.success){
-      setEntries(data.timeData.map((timeData: any) => ({...timeData, activityDate: timeData.activityDate.split('T')[0]})));
+      const newEntries = data.timeData.map((timeData: any) => ({...timeData, activityDate: timeData.activityDate.split('T')[0]}));
+      setEntries(prevEntries => [...prevEntries, ...newEntries]);
+      setHasMore(data.timeData.length === 10);
     }
+    setIsLoading(false);
   };
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, clientHeight, scrollHeight } = e.currentTarget;
+    if(scrollHeight - 100 <= scrollTop + clientHeight){
+      fetchTimeData(skip+10);
+    }
+  }
 
   useEffect(() => {
     if(user.isLoggedIn && !fetchedRef.current){
-      fetchTimeData();
+      fetchTimeData(0);
       fetchedRef.current = true;
     }
   }, [user.isLoggedIn]);
@@ -179,38 +202,40 @@ const Time: React.FC = () => {
           <FaChartLine className="me-2" /> Recent Amount Entries
         </Card.Header>
         <Card.Body>
-          <ListGroup className="mx-auto" style={{ maxWidth: '100%', height: '450px', overflowY: 'auto' }}>
+          <ListGroup className="mx-auto" style={{ maxWidth: '100%', height: '450px', overflowY: 'auto' }} onScroll={handleScroll}>
             {entries.map((item, index) => (
               <ListGroup.Item key={index} className="mb-2 border-0">
                 <Card className="shadow-sm">
                   <Card.Body>
-                    <div className="d-flex justify-content-between align-items-center mb-2">
-                      <Card.Title className="fw-bold mb-1">{item.investedIn} {item.otherCategory && `(${item.otherCategory})`}</Card.Title>
-                      <Dropdown align="end">
-                        <Dropdown.Toggle as={CustomToggle} id={`dropdown-${index}`}>
-                          <FaEllipsisV />
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          <Dropdown.Item onClick={() => handleEdit(item)}><FaEdit className="me-2" /> Edit</Dropdown.Item>
-                          <Dropdown.Item onClick={() => handleDelete(item)}><FaTrash className="me-2" /> Delete</Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </div>
-                    <div className="d-flex align-items-end justify-content-between text-muted small">
-                      <div className="d-flex align-items-center mb-0">
-                        <FaHourglassHalf className="text-primary me-2" size={18} />
-                        <Card.Text className="text-primary fw-bold mb-0 fs-5">
-                          {formatTime(item.time)}
-                        </Card.Text>
-                      </div>
-                      <span>
-                        <strong>Spent on:</strong> {new Date(item.activityDate).toLocaleDateString()}
-                      </span>
+                    <div className="mb-2">
+                      <h6>{item.activityDate}</h6>
+                      <ul className="list-unstyled">
+                        {item.data.map((data: any) => {
+                          return <li key={data._id} className='d-flex justify-content-between align-items-center'>
+                            <h6>{data.investedIn}</h6>
+                            <div className='d-flex align-items-center'>
+                              <p>{formatTime(data.time)}</p>
+                              <Dropdown align="end">
+                                <Dropdown.Toggle as={CustomToggle} id={`dropdown-${index}`}>
+                                  <FaEllipsisV />
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                  <Dropdown.Item onClick={() => handleEdit(data)}><FaEdit className="me-2" /> Edit</Dropdown.Item>
+                                  <Dropdown.Item onClick={() => handleDelete(data)}><FaTrash className="me-2" /> Delete</Dropdown.Item>
+                                </Dropdown.Menu>
+                              </Dropdown>
+                            </div>
+                          </li>
+                        })}
+                      </ul>
                     </div>
                   </Card.Body>
                 </Card>
               </ListGroup.Item>
             ))}
+            {isLoading && <ListGroup.Item className="text-center mt-3">
+              <Spinner animation="border" variant="primary" />
+            </ListGroup.Item>}
           </ListGroup>
         </Card.Body>
       </Card>
