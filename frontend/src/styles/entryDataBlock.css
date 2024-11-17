@@ -6,7 +6,7 @@
 }
 
 .data-container-header {
-    padding: 5px 15px;
+    padding: 10px 25px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -21,9 +21,13 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin: 10px 0px;
+    margin: 0px 0px;
     border-bottom: 1px solid lightgray;
-    padding: 5px 10px;
+    padding: 10px 10px;
+}
+
+.data-entry-block:last-child {
+    border-bottom: none;
 }
 
 .data-entry-block-body {
@@ -31,14 +35,57 @@
     align-items: center;
 }
 
+.button-container {
+   width: 50px;
+   display: flex;
+   justify-content: space-between;
+   font-size: 1.1rem;
+}
+
+.button-container button:nth-child(1) {
+    color: rgb(73, 89, 106);
+}
+
+.button-container button:nth-child(2) {
+    color: rgb(223, 110, 110);
+    font-size: 1.2rem;
+}
+
+.button-container button {
+    transition: all 0.3s ease;
+}
+
+.button-container button:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+}
+
+.data-entry-block-body-text {
+    width: 120px;
+}
+
 .quantity {
     padding: 0px 10px;
-    background-color: rgb(48, 119, 225);
+    background-color: rgb(36, 130, 69);
     color: white;
     font-size: .8rem;
     font-weight: bold;
     border-radius: 10px;
-    margin-left: 20px;
+}
+
+.quantity-amount {
+    background-color: rgb(36, 130, 69);
+}
+
+.quantity-time {
+    background-color: rgb(20, 119, 225);
+}
+
+.icon-container {
+    margin-right: 10px;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
 }
 
 button {

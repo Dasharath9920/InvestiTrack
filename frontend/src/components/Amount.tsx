@@ -133,7 +133,13 @@ const Amount: React.FC = () => {
     });
     const data = await resp.json();
     if(data.success){
-      const newEntries = data.amountData.map((amountData: any) => ({...amountData, expenditureDate: amountData.expenditureDate.split('T')[0]}));
+      const newEntries = data.amountData.map((amountData: any) => {
+        amountData.expenditureDate = amountData.expenditureDate.split('T')[0];
+        amountData.data.map((_data: any) => {
+          _data.expenditureDate = _data.expenditureDate.split('T')[0];
+        });
+        return amountData;
+      });
       setEntries(newEntries);
     }
   };
@@ -184,8 +190,8 @@ const Amount: React.FC = () => {
         <Card.Body>
           <ListGroup className="mx-auto" style={{ maxWidth: '100%', height: '450px', overflowY: 'auto' }}>
             {entries.map((item, index) => (
-              <ListGroup.Item key={index} className="mb-2 border-0">
-                <EntryDataBlock entry={ item } handleEdit={handleEdit} handleDelete={handleDelete} />
+              <ListGroup.Item key={index} className="mb-2 border-0 p-1">
+                <EntryDataBlock entry={ item } handleEdit={handleEdit} handleDelete={handleDelete} type="amount" />
               </ListGroup.Item>
             ))}
           </ListGroup>

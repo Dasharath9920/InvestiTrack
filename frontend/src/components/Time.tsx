@@ -1,30 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button, Modal, Form, ListGroup, Card, Container, Row, Col, Dropdown, Spinner } from 'react-bootstrap';
-import { FaPlus, FaClock, FaEllipsisV, FaEdit, FaTrash, FaHourglassHalf, FaChartLine } from 'react-icons/fa';
+import { Button, Modal, Form, ListGroup, Card, Container, Row, Col, Spinner } from 'react-bootstrap';
+import { FaPlus, FaClock, FaChartLine } from 'react-icons/fa';
 import { TIME_CATEGORIES, ACCESS_TOKEN } from '../constants/constants';
-import { formatTime } from '../helper';
 import { TimeEntry } from '../constants/dataTypes';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import '../styles/time.css'
+import EntryDataBlock from './EntryDataBlock';
 const initialEntry: TimeEntry = {
   investedIn: Object.values(TIME_CATEGORIES)[0],
   time: 0,
   activityDate: new Date().toISOString().split('T')[0]
 }
-
-const CustomToggle = React.forwardRef(({ children, onClick }: { children: React.ReactNode, onClick: (event: React.MouseEvent<HTMLDivElement>) => void }, ref: React.Ref<HTMLDivElement>) => (
-  <div
-    ref={ref}
-    onClick={(e) => {
-      e.preventDefault();
-      onClick(e);
-    }}
-    style={{cursor: 'pointer'}}
-  >
-    {children}
-  </div>
-));
 
 const Time: React.FC = () => {
   const [entries, setEntries] = useState<any[]>([]);
@@ -145,8 +132,13 @@ const Time: React.FC = () => {
     });
     const data = await resp.json();
     if(data.success){
-      const newEntries = data.timeData.map((timeData: any) => ({ ...timeData, activityDate: timeData.activityDate.split('T')[0] }));
-      console.log('entries: ', newEntries);
+      const newEntries = data.timeData.map((timeData: any) => {
+        timeData.activityDate = timeData.activityDate.split('T')[0];
+        timeData.data.map((_data: any) => {
+          _data.activityDate = _data.activityDate.split('T')[0];
+        });
+        return timeData;
+      });
       setEntries(prevEntries => [...prevEntries, ...newEntries]);
       setHasMore(data.timeData.length === 10);
     }
@@ -206,55 +198,13 @@ const Time: React.FC = () => {
         </Card.Header>
         <Card.Body>
           <ListGroup className="mx-auto" style={{ maxWidth: '100%', height: '450px', overflowY: 'auto' }} onScroll={handleScroll}>
-              {
-                entries.map((item: any, index: number) => {
-                return (
-                  <div className='time-block-heading' key={index}>
-                    <h2>{item.activityDate}</h2>
-                    <div className="time-block-body">
-                      {
-                        item.data.map((item: any, index: number) => {
-                          return (
-                            <div className="col-md-6" key={item._id}>
-                              <Card className="mb-2 shadow-sm">
-                                <Card.Body className="py-1">
-                                  <div className="d-flex justify-content-between align-items-center">
-                                    <div>
-                                      <h6 className="mb-0 fs-6">
-                                        {item.investedIn} {item.otherCategory && `(${item.otherCategory})`}
-                                      </h6>
-                                      <small className="text-muted" style={{ fontSize: '0.8rem' }}>
-                                        <em>{new Date(item.activityDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</em>
-                                      </small>
-                                    </div>
-                                    <div className="d-flex align-items-center">
-                                      {/* Badge with time */}
-                                      <span className="badge bg-primary rounded-pill">{formatTime(item.time)}</span>
-                                      {/* Dropdown button */}
-                                      <Dropdown align="end" className="ms-2">
-                                        <Dropdown.Toggle as={CustomToggle} id={`dropdown-${index}`}>
-                                          <FaEllipsisV />
-                                        </Dropdown.Toggle>
-                                        <Dropdown.Menu>
-                                          <Dropdown.Item onClick={() => handleEdit(item)}><FaEdit className="me-2" /> Edit</Dropdown.Item>
-                                          <Dropdown.Item onClick={() => handleDelete(item)}><FaTrash className="me-2" /> Delete</Dropdown.Item>
-                                        </Dropdown.Menu>
-                                      </Dropdown>
-                                    </div>
-                                  </div>
-                                </Card.Body>
-                              </Card>
-                            </div>
-                          );
-                        })
-                      }
-                    </div>
-                  </div>
-                )
-              })
+            {
+              entries.map((item: any, index: number) => (
+                <ListGroup.Item key={index} className="mb-2 border-0 p-1">
+                  <EntryDataBlock entry={ item } handleEdit={handleEdit} handleDelete={handleDelete} type="time" />
+                </ListGroup.Item>
+              ))
             }
-
-
           {isLoading && <ListGroup.Item className="text-center mt-3">
               <Spinner animation="border" variant="primary" />
             </ListGroup.Item>}

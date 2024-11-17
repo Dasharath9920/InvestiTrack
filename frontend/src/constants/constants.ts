@@ -1,12 +1,24 @@
-import { FaShoppingCart, } from "react-icons/fa";
+import { FaBus, FaShoppingCart, } from "react-icons/fa";
 import { IoFastFood } from "react-icons/io5";
 import { RiMovieFill } from "react-icons/ri";
 import { FaShoppingBag } from "react-icons/fa";
+import { MdHome } from "react-icons/md";
 import { MdFamilyRestroom } from "react-icons/md";
 import { MdHealthAndSafety } from "react-icons/md";
 import { GiHealthNormal } from "react-icons/gi";
 import { MdSavings } from "react-icons/md";
-
+import { BsBank2 } from "react-icons/bs";
+import { RiMoneyRupeeCircleFill } from "react-icons/ri";
+import { HiBuildingOffice2 } from "react-icons/hi2";
+import { FaBookReader } from "react-icons/fa";
+import { FaCode } from "react-icons/fa";
+import { IoIosBed } from "react-icons/io";
+import { IoIosFootball } from "react-icons/io";
+import { GiCookingPot } from "react-icons/gi";
+import { GiMeditation } from "react-icons/gi";
+import { MdOutlineCommute } from "react-icons/md";
+import { CgGym } from "react-icons/cg";
+import { MdAccessTimeFilled } from "react-icons/md";
 
 export const TABS = {
   DASHBOARD: "dashboard",
@@ -59,6 +71,36 @@ export const AMOUNT_CATEGORIES: { [key: string]: string } = {
   DEBT: "Debt",
   OTHER: "Other",
 };
+
+export const TIME_CATEGORY_ICONS = {
+  [TIME_CATEGORIES.WORK]: HiBuildingOffice2,
+  [TIME_CATEGORIES.STUDY]: FaBookReader,
+  [TIME_CATEGORIES.PERSONAL_DEVELOPMENT]: FaCode,
+  [TIME_CATEGORIES.SLEEP]: IoIosBed,
+  [TIME_CATEGORIES.SPORT]: IoIosFootball,
+  [TIME_CATEGORIES.COOKING]: GiCookingPot,
+  [TIME_CATEGORIES.MEDITATION]: GiMeditation,
+  [TIME_CATEGORIES.COMMUTING]: MdOutlineCommute,
+  [TIME_CATEGORIES.ENTERTAINMENT]: RiMovieFill,
+  [TIME_CATEGORIES.WORKOUT]: CgGym,
+  [TIME_CATEGORIES.FAMILY]: MdFamilyRestroom,
+  [TIME_CATEGORIES.OTHER]: MdAccessTimeFilled,
+};
+
+export const AMOUNT_CATEGORY_ICONS = {
+  [AMOUNT_CATEGORIES.GROCERIES]: FaShoppingCart,
+  [AMOUNT_CATEGORIES.FOOD]: IoFastFood,
+  [AMOUNT_CATEGORIES.ENTERTAINMENT]: RiMovieFill,
+  [AMOUNT_CATEGORIES.SHOPPING]: FaShoppingBag,
+  [AMOUNT_CATEGORIES.RENT]: MdHome,
+  [AMOUNT_CATEGORIES.TRANSPORTATION]: FaBus,
+  [AMOUNT_CATEGORIES.FAMILY]: MdFamilyRestroom,
+  [AMOUNT_CATEGORIES.INSURANCE]: MdHealthAndSafety,
+  [AMOUNT_CATEGORIES.HEALTH]: GiHealthNormal,
+  [AMOUNT_CATEGORIES.SAVINGS]: MdSavings,
+  [AMOUNT_CATEGORIES.DEBT]: BsBank2,
+  [AMOUNT_CATEGORIES.OTHER]: RiMoneyRupeeCircleFill,
+}
 
 export const SAFE_SPENDING_CATEGORIES: Array<string> = [
   AMOUNT_CATEGORIES.SAVINGS,
