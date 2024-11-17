@@ -5,6 +5,7 @@ import { AMOUNT_CATEGORIES, ACCESS_TOKEN } from '../constants/constants';
 import { AmountEntry } from '../constants/dataTypes';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import EntryDataBlock from './EntryDataBlock';
 
 const initialEntry: AmountEntry = {
   spentOn: Object.values(AMOUNT_CATEGORIES)[0],
@@ -184,35 +185,7 @@ const Amount: React.FC = () => {
           <ListGroup className="mx-auto" style={{ maxWidth: '100%', height: '450px', overflowY: 'auto' }}>
             {entries.map((item, index) => (
               <ListGroup.Item key={index} className="mb-2 border-0">
-                <Card className="shadow-sm">
-                  <Card.Body>
-                  <div className="mb-2">
-                      <div className='d-flex justify-content-between align-items-center'>
-                        <h6>{item.expenditureDate}</h6>
-                        <p className='text-muted'>Total: ₹{item.totalAmount.toLocaleString('en-IN')}</p>
-                      </div>
-                      <ul className="list-unstyled">
-                        {item.data.map((data: any) => {
-                          return <li key={data._id} className='d-flex justify-content-between align-items-center'>
-                            <h6>{data.spentOn} {data.otherCategory && `(${data.otherCategory})`}</h6>
-                            <div className='d-flex align-items-center'>
-                              <p>{data.amount.toLocaleString('en-IN')}</p>
-                              <Dropdown align="end">
-                                <Dropdown.Toggle as={CustomToggle} id={`dropdown-${index}`}>
-                                  <FaEllipsisV />
-                                </Dropdown.Toggle>
-                                <Dropdown.Menu>
-                                  <Dropdown.Item onClick={() => handleEdit(data)}><FaEdit className="me-2" /> Edit</Dropdown.Item>
-                                  <Dropdown.Item onClick={() => handleDelete(data)}><FaTrash className="me-2" /> Delete</Dropdown.Item>
-                                </Dropdown.Menu>
-                              </Dropdown>
-                            </div>
-                          </li>
-                        })}
-                      </ul>
-                    </div>
-                  </Card.Body>
-                </Card>
+                <EntryDataBlock entry={ item } handleEdit={handleEdit} handleDelete={handleDelete} />
               </ListGroup.Item>
             ))}
           </ListGroup>

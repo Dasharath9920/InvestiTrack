@@ -1,0 +1,49 @@
+.data-container {
+    border: 1px solid lightgray;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    background-color: rgb(240, 240, 240);
+}
+
+.data-container-header {
+    padding: 5px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.data-container-body {
+    background-color: white;
+    padding: 2px 15px;
+}
+
+.data-entry-block {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0px;
+    border-bottom: 1px solid lightgray;
+    padding: 5px 10px;
+}
+
+.data-entry-block-body {
+    display: flex;
+    align-items: center;
+}
+
+.quantity {
+    padding: 0px 10px;
+    background-color: rgb(48, 119, 225);
+    color: white;
+    font-size: .8rem;
+    font-weight: bold;
+    border-radius: 10px;
+    margin-left: 20px;
+}
+
+button {
+    background-color: transparent;
+    border: none;
+    margin: 0px 10px;
+    font-size: .8rem;
+}

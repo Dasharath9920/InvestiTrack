@@ -211,7 +211,7 @@ const Time: React.FC = () => {
                 return (
                   <div className='time-block-heading' key={index}>
                     <h2>{item.activityDate}</h2>
-                    <div className="row g-3">
+                    <div className="time-block-body">
                       {
                         item.data.map((item: any, index: number) => {
                           return (
