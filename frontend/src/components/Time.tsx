@@ -68,6 +68,7 @@ const Time: React.FC = () => {
       const data = await resp.json();
       if(data.success){
         let currentEntries = entries;
+        data.updatedTimeData.activityDate = data.updatedTimeData.activityDate.split('T')[0];
         if(editing){
           currentEntries = entries.map((entry: any) => {
             if(entry.activityDate === data.updatedTimeData.activityDate.split('T')[0]){
