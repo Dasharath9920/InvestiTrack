@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button, Modal, Form, ListGroup, Card, Container, Row, Col, Dropdown } from 'react-bootstrap';
-import { FaPlus, FaRupeeSign, FaEdit, FaTrash, FaEllipsisV, FaChartLine } from 'react-icons/fa';
+import { Button, Modal, Form, ListGroup, Card, Container, Row, Col } from 'react-bootstrap';
+import { FaPlus, FaRupeeSign, FaChartLine } from 'react-icons/fa';
 import { AMOUNT_CATEGORIES, ACCESS_TOKEN } from '../constants/constants';
 import { AmountEntry } from '../constants/dataTypes';
 import { useSelector } from 'react-redux';
@@ -12,19 +12,6 @@ const initialEntry: AmountEntry = {
   amount: 0,
   expenditureDate: new Date().toISOString().split('T')[0]
 }
-
-const CustomToggle = React.forwardRef(({ children, onClick }: { children: React.ReactNode, onClick: (event: React.MouseEvent<HTMLDivElement>) => void }, ref: React.Ref<HTMLDivElement>) => (
-  <div
-    ref={ref}
-    onClick={(e) => {
-      e.preventDefault();
-      onClick(e);
-    }}
-    style={{cursor: 'pointer'}}
-  >
-    {children}
-  </div>
-));
 
 const Amount: React.FC = () => {
   const [entries, setEntries] = useState<any[]>([]);

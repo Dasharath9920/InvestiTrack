@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Container, Row, Col, Card, Spinner, ProgressBar, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Spinner, Button } from 'react-bootstrap';
 import { FaRupeeSign, FaClock, FaChartLine, FaChartPie } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { ACCESS_TOKEN } from '../constants/constants';
