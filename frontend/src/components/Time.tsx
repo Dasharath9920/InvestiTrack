@@ -7,6 +7,8 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import '../styles/time.css'
 import EntryDataBlock from './EntryDataBlock';
+import { fetchTimeData } from '../services/timeService';
+
 const initialEntry: TimeEntry = {
   investedIn: Object.values(TIME_CATEGORIES)[0],
   time: 0,
@@ -65,13 +67,21 @@ const Time: React.FC = () => {
       });
       const data = await resp.json();
       if(data.success){
-        let currentEntries = entries.map((entry: any) => {
-          if(entry.activityDate === data.updatedTimeData.activityDate.split('T')[0]){
-            entry.data.map((_data: any) => _data._id === data.updatedTimeData._id ? data.updatedTimeData : _data);
+        let currentEntries = entries;
+        if(editing){
+          currentEntries = entries.map((entry: any) => {
+            if(entry.activityDate === data.updatedTimeData.activityDate.split('T')[0]){
+              entry.data = entry.data.map((_data: any) => _data._id === data.updatedTimeData._id ? data.updatedTimeData : _data);
+            }
+            return entry;
+          });
+          setEntries(currentEntries);
+        } else{
+          const timeData = await fetchTimeData(skip);
+          if(timeData.success){
+            setEntries(timeData.timeData);
           }
-          return entry;
-        });
-        setEntries(currentEntries);
+        }
         setEditing(false);
         setCurrentEntry(initialEntry);
         handleClose();
@@ -105,8 +115,10 @@ const Time: React.FC = () => {
     });
     const data = await resp.json();
     if(data.success){
-      console.log('data: ',data);
-      fetchTimeData(skip);
+      const timeData = await fetchTimeData(skip);
+      if(timeData.success){
+        setEntries(timeData.timeData);
+      }
     } else{
       console.log('error: ',data);
     }
@@ -117,29 +129,15 @@ const Time: React.FC = () => {
     setCurrentEntry({...currentEntry, time: value});
   };
 
-  const fetchTimeData = async (skip: number) => {
+  const fetchTimeEntries = async (skip: number) => {
     if(isLoading || !hasMore) return;
 
     setIsLoading(true);
     setSkip(skip);
-    const authToken = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
-    const resp = await fetch(`/api/entries/time?skip=${skip}`,{
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authToken}`
-      }
-    });
-    const data = await resp.json();
+    const data = await fetchTimeData(skip);
+
     if(data.success){
-      const newEntries = data.timeData.map((timeData: any) => {
-        timeData.activityDate = timeData.activityDate.split('T')[0];
-        timeData.data.map((_data: any) => {
-          _data.activityDate = _data.activityDate.split('T')[0];
-        });
-        return timeData;
-      });
-      setEntries(prevEntries => [...prevEntries, ...newEntries]);
+      setEntries(prevEntries => [...prevEntries, ...data.timeData]);
       setHasMore(data.timeData.length === 10);
     }
     setIsLoading(false);
@@ -154,7 +152,7 @@ const Time: React.FC = () => {
 
   useEffect(() => {
     if(user.isLoggedIn && !fetchedRef.current){
-      fetchTimeData(0);
+      fetchTimeEntries(0);
       fetchedRef.current = true;
     }
   }, [user.isLoggedIn]);
