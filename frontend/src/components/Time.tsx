@@ -6,6 +6,7 @@ import { formatTime } from '../helper';
 import { TimeEntry } from '../constants/dataTypes';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import '../styles/time.css'
 const initialEntry: TimeEntry = {
   investedIn: Object.values(TIME_CATEGORIES)[0],
   time: 0,
@@ -144,7 +145,8 @@ const Time: React.FC = () => {
     });
     const data = await resp.json();
     if(data.success){
-      const newEntries = data.timeData.map((timeData: any) => ({...timeData, activityDate: timeData.activityDate.split('T')[0]}));
+      const newEntries = data.timeData.map((timeData: any) => ({ ...timeData, activityDate: timeData.activityDate.split('T')[0] }));
+      console.log('entries: ', newEntries);
       setEntries(prevEntries => [...prevEntries, ...newEntries]);
       setHasMore(data.timeData.length === 10);
     }
@@ -166,6 +168,7 @@ const Time: React.FC = () => {
   }, [user.isLoggedIn]);
 
   const categories: string[] = Object.values(TIME_CATEGORIES);
+  
 
   return (
     !user.isLoggedIn ? 
@@ -203,37 +206,56 @@ const Time: React.FC = () => {
         </Card.Header>
         <Card.Body>
           <ListGroup className="mx-auto" style={{ maxWidth: '100%', height: '450px', overflowY: 'auto' }} onScroll={handleScroll}>
-            {entries.map((item, index) => (
-              <ListGroup.Item key={index} className="mb-2 border-0">
-                <Card className="shadow-sm">
-                  <Card.Body>
-                    <div className="mb-2">
-                      <h6>{item.activityDate}</h6>
-                      <ul className="list-unstyled">
-                        {item.data.map((data: any) => {
-                          return <li key={data._id} className='d-flex justify-content-between align-items-center'>
-                            <h6>{data.investedIn}</h6>
-                            <div className='d-flex align-items-center'>
-                              <p>{formatTime(data.time)}</p>
-                              <Dropdown align="end">
-                                <Dropdown.Toggle as={CustomToggle} id={`dropdown-${index}`}>
-                                  <FaEllipsisV />
-                                </Dropdown.Toggle>
-                                <Dropdown.Menu>
-                                  <Dropdown.Item onClick={() => handleEdit(data)}><FaEdit className="me-2" /> Edit</Dropdown.Item>
-                                  <Dropdown.Item onClick={() => handleDelete(data)}><FaTrash className="me-2" /> Delete</Dropdown.Item>
-                                </Dropdown.Menu>
-                              </Dropdown>
+              {
+                entries.map((item: any, index: number) => {
+                return (
+                  <div className='time-block-heading' key={index}>
+                    <h2>{item.activityDate}</h2>
+                    <div className="row g-3">
+                      {
+                        item.data.map((item: any, index: number) => {
+                          return (
+                            <div className="col-md-6" key={item._id}>
+                              <Card className="mb-2 shadow-sm">
+                                <Card.Body className="py-1">
+                                  <div className="d-flex justify-content-between align-items-center">
+                                    <div>
+                                      <h6 className="mb-0 fs-6">
+                                        {item.investedIn} {item.otherCategory && `(${item.otherCategory})`}
+                                      </h6>
+                                      <small className="text-muted" style={{ fontSize: '0.8rem' }}>
+                                        <em>{new Date(item.activityDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</em>
+                                      </small>
+                                    </div>
+                                    <div className="d-flex align-items-center">
+                                      {/* Badge with time */}
+                                      <span className="badge bg-primary rounded-pill">{formatTime(item.time)}</span>
+                                      {/* Dropdown button */}
+                                      <Dropdown align="end" className="ms-2">
+                                        <Dropdown.Toggle as={CustomToggle} id={`dropdown-${index}`}>
+                                          <FaEllipsisV />
+                                        </Dropdown.Toggle>
+                                        <Dropdown.Menu>
+                                          <Dropdown.Item onClick={() => handleEdit(item)}><FaEdit className="me-2" /> Edit</Dropdown.Item>
+                                          <Dropdown.Item onClick={() => handleDelete(item)}><FaTrash className="me-2" /> Delete</Dropdown.Item>
+                                        </Dropdown.Menu>
+                                      </Dropdown>
+                                    </div>
+                                  </div>
+                                </Card.Body>
+                              </Card>
                             </div>
-                          </li>
-                        })}
-                      </ul>
+                          );
+                        })
+                      }
                     </div>
-                  </Card.Body>
-                </Card>
-              </ListGroup.Item>
-            ))}
-            {isLoading && <ListGroup.Item className="text-center mt-3">
+                  </div>
+                )
+              })
+            }
+
+
+          {isLoading && <ListGroup.Item className="text-center mt-3">
               <Spinner animation="border" variant="primary" />
             </ListGroup.Item>}
           </ListGroup>
