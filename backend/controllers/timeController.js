@@ -1,9 +1,23 @@
 import asyncHandler from 'express-async-handler';
 import Time from '../models/time.model.js';
+import mongoose from 'mongoose';
 
 export const getAllTimeData = asyncHandler(async (req, res) => {
    try {
-      const timeData = await Time.find({userId: req.user.id}).sort({createdAt: -1});
+      const {skip, limit} = req.query;
+      const skipValue = skip ? parseInt(skip) : 0;
+      let timeData = await Time.aggregate([
+         {$match: {userId: new mongoose.Types.ObjectId(req.user.id)}},
+         {$group: {_id: '$activityDate', data: {$push: '$$ROOT'}}},
+         {$sort: {_id: -1}}
+      ]).skip(skipValue).limit(10);
+
+      if(timeData.length){
+         timeData = timeData.map(entry => ({
+            activityDate: entry._id,
+            data: entry.data.sort((a, b) => a.time - b.time)
+         }));
+      }
       res.status(200).json({success: true, timeData});
    } catch (error) {
       res.status(500).json({success: false,message: error.message});

@@ -1,0 +1,24 @@
+.time-block-heading {
+    border: 1px solid lightgray;
+    background-color: white;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.time-block-heading h2 {
+    font-size: 1.5rem;
+    width: 100%;
+    background-color: lightgray;
+    padding: 10px 15px;
+}
+
+.time-block-body {
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: 1fr 1fr;
+}
+
+.time-taggle {
+    display: flex;
+
+}

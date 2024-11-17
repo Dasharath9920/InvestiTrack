@@ -5,6 +5,7 @@ import { AMOUNT_CATEGORIES, ACCESS_TOKEN } from '../constants/constants';
 import { AmountEntry } from '../constants/dataTypes';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import EntryDataBlock from './EntryDataBlock';
 
 const initialEntry: AmountEntry = {
   spentOn: Object.values(AMOUNT_CATEGORIES)[0],
@@ -26,7 +27,7 @@ const CustomToggle = React.forwardRef(({ children, onClick }: { children: React.
 ));
 
 const Amount: React.FC = () => {
-  const [entries, setEntries] = useState<AmountEntry[]>([]);
+  const [entries, setEntries] = useState<any[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [currentEntry, setCurrentEntry] = useState<AmountEntry>(initialEntry);
   const [editing, setEditing] = useState(false);
@@ -132,7 +133,14 @@ const Amount: React.FC = () => {
     });
     const data = await resp.json();
     if(data.success){
-      setEntries(data.amountData.map((amountData: any) => ({...amountData, expenditureDate: amountData.expenditureDate.split('T')[0]})));
+      const newEntries = data.amountData.map((amountData: any) => {
+        amountData.expenditureDate = amountData.expenditureDate.split('T')[0];
+        amountData.data.map((_data: any) => {
+          _data.expenditureDate = _data.expenditureDate.split('T')[0];
+        });
+        return amountData;
+      });
+      setEntries(newEntries);
     }
   };
 
@@ -182,29 +190,8 @@ const Amount: React.FC = () => {
         <Card.Body>
           <ListGroup className="mx-auto" style={{ maxWidth: '100%', height: '450px', overflowY: 'auto' }}>
             {entries.map((item, index) => (
-              <ListGroup.Item key={index} className="mb-2 border-0">
-                <Card className="shadow-sm">
-                  <Card.Body>
-                    <div className="d-flex justify-content-between align-items-center mb-2">
-                      <Card.Title className="fw-bold mb-0">{item.spentOn} {item.otherCategory && `(${item.otherCategory})`}</Card.Title>
-                      <Dropdown align="end">
-                        <Dropdown.Toggle as={CustomToggle} id={`dropdown-${index}`}>
-                          <FaEllipsisV />
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          <Dropdown.Item onClick={() => handleEdit(item)}><FaEdit className="me-2" /> Edit</Dropdown.Item>
-                          <Dropdown.Item onClick={() => handleDelete(item)}><FaTrash className="me-2" /> Delete</Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </div>
-                    <div className="d-flex align-items-end justify-content-between text-muted small">
-                      <Card.Text className="text-success fs-4 mb-0">₹{item.amount.toFixed(2)}</Card.Text>
-                      <span>
-                        <strong>Spent on:</strong> {new Date(item.expenditureDate || '').toLocaleDateString()}
-                      </span>
-                    </div>
-                  </Card.Body>
-                </Card>
+              <ListGroup.Item key={index} className="mb-2 border-0 p-1">
+                <EntryDataBlock entry={ item } handleEdit={handleEdit} handleDelete={handleDelete} type="amount" />
               </ListGroup.Item>
             ))}
           </ListGroup>

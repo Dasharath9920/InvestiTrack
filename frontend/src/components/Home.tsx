@@ -48,7 +48,7 @@ const Home = () => {
 
         {/* Statistics */}
         <Row className="mb-5">
-          <Col md={4} className="mb-4 mb-md-0">
+          <Col md={6} className="mb-4 mb-md-0">
             <div className="stat-card bg-white p-4 rounded-3 shadow-sm">
               <div className="d-flex justify-content-between align-items-center mb-1">
                 <h6 className="text-muted m-0">Total Spent</h6>
@@ -56,11 +56,11 @@ const Home = () => {
                   <FaRupeeSign size={24} className="text-primary" />
                 </div>
               </div>
-              <h2 className="display-8 fw-bold mb-0">₹{statistics.totalAmount}</h2>
+              <h2 className="display-8 fw-bold mb-0">₹{statistics.totalAmount.toLocaleString('en-IN')}</h2>
               <p className="text-success mt-2 mb-0"><small>+100% from last month</small></p>
             </div>
           </Col>
-          <Col md={4}>
+          <Col md={6}>
             <div className="stat-card bg-white p-4 rounded-3 shadow-sm">
               <div className="d-flex justify-content-between align-items-center mb-1">
                 <h6 className="text-muted m-0">Total Time</h6>
@@ -70,18 +70,6 @@ const Home = () => {
               </div>
               <h2 className="display-8 fw-bold mb-0">{formatTime(statistics.totalTime)}</h2>
               <p className="text-success mt-2 mb-0"><small>+100% from last month</small></p>
-            </div>
-          </Col>
-          <Col md={4}>
-            <div className="stat-card bg-white p-4 rounded-3 shadow-sm">
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <h6 className="text-muted m-0">Progress</h6>
-                <div className="stat-icon bg-warning-subtle p-2 rounded-circle">
-                  <FaChartLine size={24} className="text-warning" />
-                </div>
-              </div>
-              <ProgressBar now={60} label={`${60}%`} className="mb-3" />
-              <p className="text-success mt-2 mb-0"><small>60% of goal achieved</small></p>
             </div>
           </Col>
         </Row>
