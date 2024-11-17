@@ -115,7 +115,7 @@ const Statistics = () => {
                 <Card.Body className='p-4'>
                   <Card.Text className='text-muted mb-1'>Last Month Amount</Card.Text>
                   <Stack direction='horizontal' className='align-items-baseline justify-content-between'>
-                    <h4 className='mb-0 me-2 fw-bold'>₹{statisticalData.lastMonthAmount?.toFixed(2)}</h4>
+                    <h5 className='mb-0 me-2 fw-bold'>₹{statisticalData.lastMonthAmount?.toFixed(2)}</h5>
                     <small className={`text-${statisticalData.amountDifferencePercentage <= 0 ? 'success' : 'danger'}`}>
                       {statisticalData.amountDifferencePercentage >= 0 ? '↑' : '↓'} {statisticalData.amountDifferencePercentage?.toFixed(2)}%
                     </small>
@@ -128,7 +128,7 @@ const Statistics = () => {
                 <Card.Body className='p-4'>
                   <Card.Text className='text-muted mb-1'>Max Avg Amount ({statisticalData.maxAvgAmount?.spentOn})</Card.Text>
                   <Stack direction='horizontal' className='align-items-baseline justify-content-between'>
-                    <h4 className='mb-0 me-2 fw-bold'>₹{(statisticalData.maxAvgAmount?.amount || 0).toFixed(2)}<small className='fs-6 fw-normal'> / day</small></h4>
+                    <h5 className='mb-0 me-2 fw-bold'>₹{(statisticalData.maxAvgAmount?.amount || 0).toFixed(2)}<small className='fs-6 fw-normal'> / day</small></h5>
                     <small className={`text-${statisticalData.averageAmountDifferencePercentage <= 0 ? 'success' : 'danger'}`}>
                       {statisticalData.averageAmountDifferencePercentage >= 0 ? '↑' : '↓'} {statisticalData.averageAmountDifferencePercentage?.toFixed(2)}%
                     </small>
@@ -141,7 +141,7 @@ const Statistics = () => {
               <Card.Body className='p-4'>
                 <Card.Text className='text-muted mb-1'>Productive Time</Card.Text>
                 <Stack direction='horizontal' className='align-items-baseline justify-content-between'>
-                  <h4 className='mb-0 me-2 fw-bold'>{getTimeDescription(statisticalData.productiveTime)}<small className='fs-6 fw-normal'> / day</small></h4>
+                  <h5 className='mb-0 me-2 fw-bold'>{getTimeDescription(statisticalData.productiveTime)}<small className='fs-6 fw-normal'> / day</small></h5>
                   <small className={`text-${statisticalData.productiveTimeDifferencePercentage >= 0 ? 'success' : 'danger'}`}>
                     {statisticalData.productiveTimeDifferencePercentage >= 0 ? '↑' : '↓'} {statisticalData.productiveTimeDifferencePercentage?.toFixed(2)}%
                   </small>
@@ -154,7 +154,7 @@ const Statistics = () => {
               <Card.Body className='p-4'>
                 <Card.Text className='text-muted mb-1'>Entertainment Time</Card.Text>
                 <Stack direction='horizontal' className='align-items-baseline justify-content-between'>
-                  <h4 className='mb-0 me-2 fw-bold'>{getTimeDescription(statisticalData.entertainmentTime)}<small className='fs-6 fw-normal'> / day</small></h4>
+                  <h5 className='mb-0 me-2 fw-bold'>{getTimeDescription(statisticalData.entertainmentTime)}<small className='fs-6 fw-normal'> / day</small></h5>
                   <small className={`text-${statisticalData.entertainmentTimeDifferencePercentage <= 0 ? 'success' : 'danger'}`}>
                     {statisticalData.entertainmentTimeDifferencePercentage >= 0 ? '↑' : '↓'} {statisticalData.entertainmentTimeDifferencePercentage?.toFixed(2)}%
                   </small>
@@ -251,17 +251,25 @@ const Statistics = () => {
         </Row>
 
         <Row style={{minHeight: '300px'}}>
-          <Col sm={8}>
-            <Card className='h-100 p-1'>
+        <Col sm={8}>
+            <Card className='h-100 p-2'>
               <Card.Body>
-                <Row className="align-items-center">
-                  <Col xs={3}>Time Spent</Col>
-                  <Col xs={7}>
+                <Row className="align-items-center mb-4">
+                  <Col xs={3}>
+                    <NavDropdown title={chartQuery.chartType === 'time' ? 'Time' : 'Amount'}>
+                      <NavDropdown.Item onClick={() => {setChartQuery({...chartQuery, chartType: 'time', chartCategory: TIME_CATEGORIES.WORK});}}>Time Report</NavDropdown.Item>
+                      <NavDropdown.Item onClick={() => {setChartQuery({...chartQuery, chartType: 'amount', chartCategory: AMOUNT_CATEGORIES.GROCERIES});}}>Amount Report</NavDropdown.Item>
+                    </NavDropdown>
+                  </Col>
+                  <Col xs={6}>
                     <Card className="border-0">
-                      <Card.Body className="p-0">
-                        <Stack direction="horizontal" gap={2}>
-                          {TIME_PERIODS.map((period) => (
-                            <button key={period.id} className="btn btn-sm btn-outline-secondary">
+                      <Card.Body className="p-0 d-flex justify-content-center">
+                        <Stack direction="horizontal" gap={2} className='flex-wrap'>
+                          {CHART_DATA_TIME_PERIODS.map((period) => (
+                            <button key={period.id} className="btn btn-sm btn-outline-secondary" 
+                              style={{ width: '90px', padding: '3px', backgroundColor: 'white', borderWidth: period.id === chartQuery.chartTimePeriod.id ? '1.5px' : '.2px', color: '#6c757d' }} 
+                              onClick={() => setChartQuery({...chartQuery, chartTimePeriod: period})}
+                            >
                               {period.label}
                             </button>
                           ))}
@@ -269,12 +277,26 @@ const Statistics = () => {
                       </Card.Body>
                     </Card>
                   </Col>
-                  <Col xs={2}>export to pdf</Col>
+                  <Col xs={3} className='d-flex justify-content-end'>
+                    <NavDropdown title={chartQuery.chartCategory}>
+                        {chartQuery.chartType === 'time'  && Object.values(TIME_CATEGORIES).map((category: string) => {
+                          return <NavDropdown.Item onClick={() => setChartQuery({...chartQuery, chartCategory: category})}>{category}</NavDropdown.Item>
+                        })}
+                        {chartQuery.chartType === 'amount'  && Object.values(AMOUNT_CATEGORIES).map((category: string) => {
+                          return <NavDropdown.Item onClick={() => setChartQuery({...chartQuery, chartCategory: category})}>{category}</NavDropdown.Item>
+                        })}
+                    </NavDropdown>
+                  </Col>
                 </Row>
-
+                <Row className="overflow-auto" style={{ height: '250px' }}>
+                  <Col className='p-0'>
+                    <CurvedLineChart chartData={chartData?.[chartQuery.chartCategory]} category={chartQuery.chartCategory} timePeriod={chartQuery.chartTimePeriod} />
+                  </Col>
+                </Row>
               </Card.Body>
             </Card>
           </Col>
+          
           <Col sm={4}>
             <Card className='p-2'>
               <Card.Body>
