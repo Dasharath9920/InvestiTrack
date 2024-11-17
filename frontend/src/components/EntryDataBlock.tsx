@@ -23,8 +23,8 @@ function EntryDataBlock(props: any) {
                             <div className={type === "amount" ? "quantity quantity-amount" : "quantity quantity-time"}>{type === "amount" ? `₹${entryData.amount.toLocaleString('en-IN')}` : `${formatTime(entryData.time)  }`}</div>
                         </div>
                         <div className='data-entry-block-body button-container'>
-                            <button onClick={() => handleEdit(entryData)}><FaEdit /></button>
-                            <button onClick={() => handleDelete(entryData)}><MdDeleteOutline /></button>
+                            <button className='button' onClick={() => handleEdit(entryData)}><FaEdit /></button>
+                            <button className='button' onClick={() => handleDelete(entryData)}><MdDeleteOutline /></button>
                         </div>
                     </div>
                 })}

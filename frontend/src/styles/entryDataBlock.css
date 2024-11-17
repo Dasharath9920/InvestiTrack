@@ -36,7 +36,7 @@
 }
 
 .button-container {
-   width: 50px;
+   width: 40px;
    display: flex;
    justify-content: space-between;
    font-size: 1.1rem;
@@ -44,6 +44,7 @@
 
 .button-container button:nth-child(1) {
     color: rgb(73, 89, 106);
+    font-size: 1rem;
 }
 
 .button-container button:nth-child(2) {
@@ -88,9 +89,10 @@
     align-items: center;
 }
 
-button {
+.button {
     background-color: transparent;
+    width: 20px;
     border: none;
-    margin: 0px 10px;
+    margin: 0px;
     font-size: .8rem;
 }
