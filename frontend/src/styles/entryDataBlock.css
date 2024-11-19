@@ -112,10 +112,9 @@
 
     .button-container {
         max-width: 40px;
-        position: absolute;
-        right: 10px; /* Reduce to avoid overflow */
-        top: 50%; /* Align vertically */
-        transform: translateY(-50%);
+        position: absolute !important;
+        right: 10px !important;
+        background-color: yellow;
     }
 
     .data-container-header {
@@ -129,5 +128,29 @@
     .data-entry-block-body {
         flex: 1;
         min-width: 0;
+    }
+
+    .data-entry-block-body-text {
+        width: 100px;
+        font-size: .8rem;
+    }
+
+    .quantity {
+        font-size: .6rem;
+    }
+
+    .icon-container {
+        font-size: .9rem;
+        margin-right: 5px;
+    }   
+
+    .button-container button:nth-child(1) {
+        font-size: .8rem;
+        margin: 0px;
+    }
+
+    .button-container button:nth-child(2) {
+        font-size: .9rem;
+        margin: 0px;
     }
 }
