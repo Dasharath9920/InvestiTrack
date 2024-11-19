@@ -103,6 +103,7 @@
     .data-container {
         margin: 0px;
         border-radius: 10px;
+        background-color: yellow;
     }
 
     .data-entry-block {
@@ -114,10 +115,12 @@
         max-width: 40px;
         position: absolute !important;
         right: 10px !important;
+        background-color: blue;
     }
 
     .button {
         margin: 0px;
+        background-color: green;
     }
 
     .data-container-header {
@@ -126,11 +129,13 @@
 
     .data-container-body {
         padding: 0px;
+        background-color: orange;
     }
 
     .data-entry-block-body {
         flex: 1;
         min-width: 0;
+        background-color: red;
     }
 
     .data-entry-block-body-text {
