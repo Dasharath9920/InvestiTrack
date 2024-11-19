@@ -114,7 +114,10 @@
         max-width: 40px;
         position: absolute !important;
         right: 10px !important;
-        background-color: yellow;
+    }
+
+    .button {
+        margin: 0px;
     }
 
     .data-container-header {
@@ -131,7 +134,6 @@
     }
 
     .data-entry-block-body-text {
-        width: 100px;
         font-size: .8rem;
     }
 
@@ -141,7 +143,7 @@
 
     .icon-container {
         font-size: .9rem;
-        margin-right: 5px;
+        margin-right: 8px;
     }   
 
     .button-container button:nth-child(1) {
