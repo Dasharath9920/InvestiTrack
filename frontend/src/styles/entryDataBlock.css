@@ -92,24 +92,27 @@
 
 .button {
     background-color: transparent;
-    width: 20px;
+    max-width: 20px;
     border: none;
     margin: 0px;
     font-size: .8rem;
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (max-device-width: 500px) {
     .data-container {
         margin: 0px;
         border-radius: 10px;
     }
 
     .data-entry-block {
+        position: relative;
         padding: 5px 10px;
     }
 
     .button-container {
-        width: 40px;
+        max-width: 40px;
+        position: absolute;
+        right: 10px;
     }
 
     .data-container-header {
