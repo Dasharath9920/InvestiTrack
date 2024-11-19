@@ -98,7 +98,7 @@
     font-size: .8rem;
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 800px) {
     .data-container {
         margin: 0px;
         border-radius: 10px;
