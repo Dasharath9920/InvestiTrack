@@ -67,26 +67,25 @@ const Time: React.FC = () => {
       });
       const data = await resp.json();
       if(data.success){
-        let currentEntries = entries;
-        data.updatedTimeData.activityDate = data.updatedTimeData.activityDate.split('T')[0];
+        setCurrentEntry(initialEntry);
+        handleClose();
+        setValidated(true);
         if(editing){
-          currentEntries = entries.map((entry: any) => {
-            if(entry.activityDate === data.updatedTimeData.activityDate.split('T')[0]){
+          data.updatedTimeData.activityDate = data.updatedTimeData.activityDate.split('T')[0];
+          let currentEntries = entries.map((entry: any) => {
+            if(entry.activityDate === data.updatedTimeData.activityDate){
               entry.data = entry.data.map((_data: any) => _data._id === data.updatedTimeData._id ? data.updatedTimeData : _data);
             }
             return entry;
           });
           setEntries(currentEntries);
+          setEditing(false);
         } else{
           const timeData = await fetchTimeData(skip);
           if(timeData.success){
             setEntries(timeData.timeData);
           }
         }
-        setEditing(false);
-        setCurrentEntry(initialEntry);
-        handleClose();
-        setValidated(true);
       }
       else{
         console.log('error: ',data);

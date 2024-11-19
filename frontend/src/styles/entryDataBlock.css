@@ -36,10 +36,11 @@
 }
 
 .button-container {
-   width: 40px;
    display: flex;
+   align-items: center;
    justify-content: space-between;
    font-size: 1.1rem;
+   width: 50px;
 }
 
 .button-container button:nth-child(1) {
@@ -95,4 +96,27 @@
     border: none;
     margin: 0px;
     font-size: .8rem;
+}
+
+@media screen and (max-width: 500px) {
+    .data-container {
+        margin: 0px;
+        border-radius: 10px;
+    }
+
+    .data-entry-block {
+        padding: 5px 10px;
+    }
+
+    .button-container {
+        width: 40px;
+    }
+
+    .data-container-header {
+        padding: 10px 10px;
+    }
+
+    .data-container-body {
+        padding: 0px;
+    }
 }
